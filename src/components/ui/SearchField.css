@@ -1,0 +1,27 @@
+.ui-search-field {
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.ui-search-field::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.ui-search-field:focus {
+  border-color: var(--primarycolor, #CB6D47);
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.ui-search-field:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+
+

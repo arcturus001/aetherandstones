@@ -1,24 +1,23 @@
-import {
-  Text,
-  Divider,
-  Link as SpectrumLink,
-} from "@react-spectrum/s2";
-import { style } from "@react-spectrum/s2/style" with { type: "macro" };
-import { homeCopy } from "../data/copy";
+import { Text, Divider } from "./ui";
+import { style } from "../utils/styles";
+import { Link } from "react-router-dom";
 
 export const Footer = () => {
   return (
     <footer
-      className={style({
-        backgroundColor: "layer-1",
-        borderTop: "1px solid",
-        borderTopColor: "gray-200",
-        padding: 32,
-        marginTop: "auto",
-      })}
+      style={{
+        ...style({
+          borderTop: "1px solid",
+          borderTopColor: "[#2E2E2E]",
+          padding: 32,
+          paddingTop: 40,
+          marginTop: "auto",
+        }),
+        backgroundColor: "#141414",
+      }}
     >
       <div
-        className={style({
+        style={style({
           maxWidth: 1200,
           marginX: "auto",
           display: "grid",
@@ -28,79 +27,80 @@ export const Footer = () => {
       >
         {/* Brand */}
         <div>
-          <Text styles={style({ font: "title", fontWeight: "bold", color: "accent", marginBottom: 16 })}>
+          <Text
+            styles={style({
+              font: "title",
+              fontWeight: "bold",
+              color: "var(--primarycolor)",
+              marginBottom: 16,
+              display: "block",
+            })}
+          >
             Aether & Stones
           </Text>
-          <Text styles={style({ color: "neutral-subdued" })}>
-            {homeCopy.footerDescription}
-          </Text>
+          <div style={style({ display: "flex", flexDirection: "column", gap: 4 })}>
+            <Text styles={style({ color: "[rgba(255, 255, 255, 0.6)]", display: "block" })}>
+              Hand-finished stone bracelets crafted to amplify how you feel.
+            </Text>
+            <Text styles={style({ color: "[rgba(255, 255, 255, 0.6)]", display: "block" })}>
+              Each piece is designed to channel the energy you need most.
+            </Text>
+          </div>
         </div>
 
         {/* Quick Links */}
         <div>
-          <Text styles={style({ font: "body", fontWeight: "bold", marginBottom: 16 })}>
+          <Text styles={style({ fontWeight: "bold", marginBottom: 16, color: "var(--primarycolor)" })}>
             Quick Links
           </Text>
-          <div className={style({ display: "flex", flexDirection: "column", gap: 8 })}>
-            <SpectrumLink>
-              <a href="/shop" style={{ textDecoration: 'none', color: 'inherit' }}>
-                Shop Collection
-              </a>
-            </SpectrumLink>
-            <SpectrumLink>
-              <a href="/energy" style={{ textDecoration: 'none', color: 'inherit' }}>
-                Energy Guide
-              </a>
-            </SpectrumLink>
-            <SpectrumLink>
-              <a href="/about" style={{ textDecoration: 'none', color: 'inherit' }}>
-                Our Story
-              </a>
-            </SpectrumLink>
-            <SpectrumLink>
-              <a href="/shipping" style={{ textDecoration: 'none', color: 'inherit' }}>
-                Shipping & Returns
-              </a>
-            </SpectrumLink>
+          <div style={style({ display: "flex", flexDirection: "column", gap: 12 })}>
+            <Link to="/shop" style={style({ textDecoration: "none" })}>
+              <Text styles={style({ color: "[rgba(255, 255, 255, 0.5)]" })}>Shop Collection</Text>
+            </Link>
+            <Link to="/energy" style={style({ textDecoration: "none" })}>
+              <Text styles={style({ color: "[rgba(255, 255, 255, 0.5)]" })}>Energy Guide</Text>
+            </Link>
+            <Link to="/about" style={style({ textDecoration: "none" })}>
+              <Text styles={style({ color: "[rgba(255, 255, 255, 0.5)]" })}>Our Story</Text>
+            </Link>
+            <Link to="/shipping" style={style({ textDecoration: "none" })}>
+              <Text styles={style({ color: "[rgba(255, 255, 255, 0.5)]" })}>Shipping & Returns</Text>
+            </Link>
           </div>
         </div>
 
         {/* Support */}
         <div>
-          <Text styles={style({ font: "body", fontWeight: "bold", marginBottom: 16 })}>
+          <Text styles={style({ fontWeight: "bold", marginBottom: 16, color: "var(--primarycolor)" })}>
             Support
           </Text>
-          <div className={style({ display: "flex", flexDirection: "column", gap: 8 })}>
-            <SpectrumLink href="mailto:hello@aetherandstones.com">
-              Contact Us
-            </SpectrumLink>
-            <SpectrumLink>
-              <a href="/faq" style={{ textDecoration: 'none', color: 'inherit' }}>
-                FAQ
-              </a>
-            </SpectrumLink>
-            <SpectrumLink>
-              <a href="/care" style={{ textDecoration: 'none', color: 'inherit' }}>
-                Care Guide
-              </a>
-            </SpectrumLink>
-            <SpectrumLink>
-              <a href="/warranty" style={{ textDecoration: 'none', color: 'inherit' }}>
-                Warranty
-              </a>
-            </SpectrumLink>
+          <div style={style({ display: "flex", flexDirection: "column", gap: 12 })}>
+            <Link to="/contact" style={style({ textDecoration: "none" })}>
+              <Text styles={style({ color: "[rgba(255, 255, 255, 0.5)]" })}>Contact Us</Text>
+            </Link>
+            <Link to="/faq" style={style({ textDecoration: "none" })}>
+              <Text styles={style({ color: "[rgba(255, 255, 255, 0.5)]" })}>FAQ</Text>
+            </Link>
+            <Link to="/care" style={style({ textDecoration: "none" })}>
+              <Text styles={style({ color: "[rgba(255, 255, 255, 0.5)]" })}>Care Guide</Text>
+            </Link>
+            <Link to="/warranty" style={style({ textDecoration: "none" })}>
+              <Text styles={style({ color: "[rgba(255, 255, 255, 0.5)]" })}>Warranty</Text>
+            </Link>
           </div>
         </div>
 
         {/* Newsletter */}
         <div>
-          <Text styles={style({ font: "body", fontWeight: "bold", marginBottom: 16 })}>
+          <Text styles={style({ fontWeight: "bold", marginBottom: 16, color: "var(--primarycolor)" })}>
             Stay Connected
           </Text>
-          <Text styles={style({ color: "neutral-subdued", marginBottom: 16 })}>
-            Get updates on new collections and energy insights.
-          </Text>
-          <div className={style({ display: "flex", gap: 8 })}>
+          <div style={{ paddingBottom: 32, marginTop: 16 }}>
+            <Text styles={style({ color: "[rgba(255, 255, 255, 0.6)]" })}>
+              Get updates on new collections and energy insights.
+            </Text>
+          </div>
+          <div style={style({ display: "flex", gap: 8 })}>
             <input
               type="email"
               placeholder="Enter your email"
@@ -114,8 +114,8 @@ export const Footer = () => {
             <button
               style={{
                 padding: "8px 16px",
-                backgroundColor: "#1473e6",
-                color: "white",
+                backgroundColor: "var(--primarycolor)",
+                color: "#050505",
                 border: "none",
                 borderRadius: "4px",
                 cursor: "pointer",
@@ -127,10 +127,10 @@ export const Footer = () => {
         </div>
       </div>
 
-      <Divider styles={style({ marginY: 32 })} />
+      <Divider style={style({ marginTop: 32, marginBottom: 32 })} className="footer-divider" />
 
       <div
-        className={style({
+        style={style({
           maxWidth: 1200,
           marginX: "auto",
           display: "flex",
@@ -140,17 +140,13 @@ export const Footer = () => {
           gap: 16,
         })}
       >
-        <Text styles={style({ color: "neutral-subdued", font: "detail-sm" })}>
+        <Text styles={style({ color: "[rgba(255, 255, 255, 0.6)]", fontSize: "[0.875rem]" })}>
           © 2024 Aether & Stones. All rights reserved.
         </Text>
-        <div className={style({ display: "flex", gap: 16 })}>
-          <SpectrumLink href="#">
-            Privacy Policy
-          </SpectrumLink>
-          <SpectrumLink href="#">
-            Terms of Service
-          </SpectrumLink>
-        </div>
+          <div style={style({ display: "flex", gap: 16 })}>
+            <Text styles={style({ color: "[rgba(255, 255, 255, 0.5)]" })}>Privacy Policy</Text>
+            <Text styles={style({ color: "[rgba(255, 255, 255, 0.5)]" })}>Terms of Service</Text>
+          </div>
       </div>
     </footer>
   );

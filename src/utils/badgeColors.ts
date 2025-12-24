@@ -1,5 +1,5 @@
 const badgePalette = [
-  "#D1A95B",
+  "#CB6D47",
   "#E84F2D",
   "#4FB4FF",
   "#B35AFF",

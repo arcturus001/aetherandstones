@@ -1,22 +1,20 @@
-import React, { CSSProperties } from "react";
-import {
-  CardPreview,
-  Content,
-  Button,
-  Badge,
-  Text,
-} from "@react-spectrum/s2";
-import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+import React, { useState } from "react";
+import { Badge, Text } from "./ui";
+import { style } from "../utils/styles";
 import { useNavigate } from "react-router-dom";
-import type { Product } from "../data/products";
+import type { ExtendedProduct } from "../utils/products";
 import { getBadgeColor } from "../utils/badgeColors";
+import { BadgeTag } from "./BadgeTag";
 
 interface ProductCardProps {
-  product: Product;
+  product: ExtendedProduct;
+  hoverImage?: string | null;
 }
 
-export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+export const ProductCard: React.FC<ProductCardProps> = ({ product, hoverImage = null }) => {
   const navigate = useNavigate();
+  const [isHovered, setIsHovered] = useState(false);
+  
   const handleNavigate = () => {
     if (product.inStock) {
       navigate(`/product/${product.id}`);
@@ -44,69 +42,100 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       style={{
         cursor: product.inStock ? "pointer" : "not-allowed",
         width: "100%",
-        maxWidth: 320,
-        backgroundColor: "#141414",
-        border: "1px solid #2E2E2E",
-        borderRadius: "12px",
+        backgroundColor: "transparent",
+        border: "none",
+        borderRadius: 0,
         overflow: "hidden",
-        paddingBottom: "16px",
-        paddingLeft: "16px",
-        paddingRight: "16px",
-        paddingTop: "16px",
+        paddingBottom: 0,
+        paddingLeft: 0,
+        paddingRight: 0,
+        paddingTop: 0,
       }}
+      className="product-card"
     >
-      <CardPreview>
-        <div
-          className={style({
-            position: "relative",
+      <div
+        className="product-card-image-container"
+        style={style({
+          position: "relative",
+          backgroundColor: "transparent",
+          borderRadius: 0,
+          overflow: "hidden",
+          width: "100%",
+        })}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        <img
+          src={product.image}
+          alt={product.name}
+          style={style({
             width: "100%",
-            height: 240,
-            backgroundColor: "gray-100",
-            borderRadius: "[8px 8px 0 0]",
-            overflow: "hidden",
+            height: "100%",
+            objectFit: "cover",
+            opacity: isHovered ? 0 : 1,
+            transition: "opacity 0.3s ease-in-out",
+            position: "absolute",
+            top: 0,
+            left: 0,
           })}
-        >
+        />
+        {hoverImage && (
           <img
-            src={product.image}
-            alt={product.name}
-            className={style({
+            src={hoverImage}
+            alt={`${product.name} hover`}
+            style={style({
               width: "100%",
               height: "100%",
               objectFit: "cover",
+              opacity: isHovered ? 1 : 0,
+              transition: "opacity 0.3s ease-in-out",
+              position: "absolute",
+              top: 0,
+              left: 0,
             })}
           />
-          {!product.inStock && (
-            <div
-              className={style({
-                position: "absolute",
-                top: 8,
-                right: 8,
-              })}
-            >
-              <Badge variant="negative">Out of Stock</Badge>
-            </div>
+        )}
+        {!product.inStock && (
+          <div
+            style={style({
+              position: "absolute",
+              top: 8,
+              right: 8,
+            })}
+          >
+            <Badge variant="negative">Out of Stock</Badge>
+          </div>
+        )}
+        <div
+          style={style({
+            position: "absolute",
+            top: 8,
+            left: 8,
+            display: "flex",
+            flexDirection: "column",
+            gap: 4,
+          })}
+        >
+          {product.isNew && (
+            <Badge variant="informative">NEW</Badge>
           )}
-          {product.originalPrice && product.originalPrice > product.price && (
-            <div
-              className={style({
-                position: "absolute",
-                top: 8,
-                left: 8,
-              })}
-            >
-              <Badge variant="positive">
-                {Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% OFF
-              </Badge>
-            </div>
+          {product.salePercentage && (
+            <Badge variant="positive">
+              {product.salePercentage}% OFF
+            </Badge>
+          )}
+          {!product.salePercentage && product.originalPrice && product.originalPrice > product.price && (
+            <Badge variant="positive">
+              {Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% OFF
+            </Badge>
           )}
         </div>
-      </CardPreview>
+      </div>
 
-      <div className={style({ marginTop: 24, padding: 0 })}>
-        <div className={style({ display: "flex", alignItems: "center" })}>
+      <div style={style({ marginTop: 24, padding: 0, textAlign: "center" })}>
+        <div style={style({ display: "flex", alignItems: "center", justifyContent: "center" })}>
           <Text
             styles={style({
-              font: "heading-sm",
               fontWeight: "bold",
               color: "white",
               marginBottom: 8,
@@ -117,68 +146,52 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         </div>
       </div>
 
-      <Content>
+      <div style={style({ paddingX: 0, textAlign: "center" })}>
         <Text
           styles={style({
-            color: "white",
-            font: "detail-sm",
+            color: "[#A1978D]",
+            fontSize: "[0.875rem]",
             marginBottom: 12,
+            display: "-webkit-box",
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            lineHeight: "[1.5]",
+            maxHeight: "[2.625rem]",
           })}
         >
           {product.description}
         </Text>
 
-        <div className={style({ display: "flex", flexWrap: "wrap", gap: 4, marginTop: 16, marginBottom: 16 })}>
-          {product.properties.slice(0, 3).map((property) => {
-            const color = getBadgeColor(property);
-            const styleProps = { "--badge-color": color } as CSSProperties;
-            return (
-              <div key={property} style={styleProps}>
-                <Badge
-                  variant="neutral"
-                  UNSAFE_className="property-badge"
-                >
-                  {property}
-                </Badge>
-              </div>
-            );
-          })}
+        <div style={style({ display: "flex", flexWrap: "wrap", gap: 4, marginTop: 16, marginBottom: 16, justifyContent: "center" })}>
+          {product.properties.slice(0, 3).map((property) => (
+            <BadgeTag key={property} label={property} color={getBadgeColor(property)} />
+          ))}
         </div>
 
-        <div className={style({ display: "flex", alignItems: "center", justifyContent: "space-between" })}>
-          <div className={style({ display: "flex", alignItems: "baseline", gap: 4 })}>
-            <Text
-              styles={style({
-                font: "heading-sm",
-                fontWeight: "bold",
-                color: "white",
-              })}
-            >
-              ${product.price}
-            </Text>
-            {product.originalPrice && product.originalPrice > product.price && (
-              <span
-                style={{
-                  fontSize: "14px",
-                  color: "rgba(255, 255, 255, 0.6)",
-                  textDecoration: "line-through",
-                }}
-              >
-                ${product.originalPrice}
-              </span>
-            )}
-          </div>
-
-          <Button
-            variant="primary"
-            size="S"
-            isDisabled={!product.inStock}
-            onPress={handleNavigate}
+        <div style={style({ display: "flex", alignItems: "baseline", gap: 4, justifyContent: "center" })}>
+          <Text
+            styles={style({
+              fontWeight: "bold",
+              color: "white",
+            })}
           >
-            {product.inStock ? "View Details" : "Sold Out"}
-          </Button>
+            ${product.price}
+          </Text>
+          {product.originalPrice && product.originalPrice > product.price && (
+            <span
+              style={{
+                fontSize: "14px",
+                color: "rgba(255, 255, 255, 0.6)",
+                textDecoration: "line-through",
+              }}
+            >
+              ${product.originalPrice}
+            </span>
+          )}
         </div>
-      </Content>
+      </div>
     </div>
   );
 };

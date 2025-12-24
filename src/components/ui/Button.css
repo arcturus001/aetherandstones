@@ -1,0 +1,95 @@
+.ui-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 8px;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  outline: none;
+}
+
+.ui-button:focus-visible {
+  outline: 2px solid var(--primarycolor, #CB6D47);
+  outline-offset: 2px;
+}
+
+/* Variants */
+.ui-button--primary {
+  background-color: var(--primarycolor, #CB6D47);
+  color: #050505;
+}
+
+.ui-button--primary:hover:not(:disabled) {
+  background-color: #c19a4a;
+}
+
+.ui-button--secondary {
+  background-color: transparent;
+  color: white;
+  border: 1px solid var(--primarycolor, #CB6D47);
+}
+
+.ui-button--secondary:hover:not(:disabled) {
+  background-color: rgba(209, 169, 91, 0.1);
+}
+
+.ui-button--accent {
+  background-color: var(--primarycolor, #CB6D47);
+  color: #050505;
+}
+
+.ui-button--quiet {
+  background-color: transparent;
+  color: inherit;
+}
+
+.ui-button--quiet:hover:not(:disabled) {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Sizes */
+.ui-button--xs {
+  padding: 4px 8px;
+  font-size: 0.75rem;
+  min-height: 24px;
+}
+
+.ui-button--s {
+  padding: 6px 12px;
+  font-size: 0.875rem;
+  min-height: 32px;
+}
+
+.ui-button--m {
+  padding: 8px 16px;
+  font-size: 1rem;
+  min-height: 40px;
+}
+
+.ui-button--l {
+  padding: 12px 24px;
+  font-size: 1.125rem;
+  min-height: 48px;
+}
+
+/* States */
+.ui-button--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ui-button--pending {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.ui-button--emphasized {
+  font-weight: 600;
+}
+
+
+

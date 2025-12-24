@@ -11,12 +11,23 @@
  */
 
 import React, { useState } from "react";
-import { Provider } from "@react-spectrum/s2";
-import "@react-spectrum/s2/page.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import ProductDetail from "./pages/ProductDetail";
-import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+import Shop from "./pages/Shop";
+import EnergyGuide from "./pages/EnergyGuide";
+import ComponentsReadme from "./pages/ComponentsReadme";
+import FAQ from "./pages/FAQ";
+import Contact from "./pages/Contact";
+import CareGuide from "./pages/CareGuide";
+import Warranty from "./pages/Warranty";
+import About from "./pages/About";
+import ShippingReturns from "./pages/ShippingReturns";
+import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
+import Admin from "./pages/Admin";
+import ProductPreview from "./pages/ProductPreview";
+import { style } from "./utils/styles";
 
 function App() {
   const [isDarkMode] = useState(() => {
@@ -40,21 +51,32 @@ function App() {
   }, [isDarkMode]);
 
   return (
-    <Provider colorScheme={isDarkMode ? 'dark' : 'light'}>
-      <BrowserRouter>
-        <div className={style({
-          minHeight: "[100vh]",
-          backgroundColor: "base",
-          display: "flex",
-          flexDirection: "column",
-        })}>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/product/:productId" element={<ProductDetail />} />
-          </Routes>
-        </div>
-      </BrowserRouter>
-    </Provider>
+    <BrowserRouter>
+      <div style={style({
+        minHeight: "[100vh]",
+        backgroundColor: "#050505",
+        display: "flex",
+        flexDirection: "column",
+      })}>
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/shop" element={<Shop />} />
+          <Route path="/energy" element={<EnergyGuide />} />
+          <Route path="/faq" element={<FAQ />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/care" element={<CareGuide />} />
+          <Route path="/warranty" element={<Warranty />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/shipping" element={<ShippingReturns />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/admin" element={<Admin />} />
+          <Route path="/admin/preview/:productId" element={<ProductPreview />} />
+          <Route path="/framework" element={<ComponentsReadme />} />
+          <Route path="/product/:productId" element={<ProductDetail />} />
+        </Routes>
+      </div>
+    </BrowserRouter>
   );
 }
 

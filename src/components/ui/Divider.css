@@ -1,0 +1,32 @@
+.ui-divider {
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ui-divider--horizontal {
+  width: 100%;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ui-divider--vertical {
+  height: 100%;
+  width: 1px;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ui-divider--s {
+  border-width: 1px;
+}
+
+.ui-divider--m {
+  border-width: 2px;
+}
+
+.ui-divider--l {
+  border-width: 4px;
+}
+
+
+
+

@@ -1,19 +1,56 @@
-import {
-  Heading,
-  Text,
-  Button,
-} from "@react-spectrum/s2";
-import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+import { Heading, Text, Button } from "../components/ui";
+import { style } from "../utils/styles";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import { ProductCard } from "../components/ProductCard";
 import { homeCopy } from "../data/copy";
-import { products } from "../data/products";
-import { heroImage } from "../assets";
+import { getProducts } from "../utils/products";
+import { heroImage, ruleImage, hoverGreenImage, obsidianImage, brownImage, purpleImage } from "../assets";
 import { primarycolor } from "../styles/primaryColor";
+import { useEffect, useRef } from "react";
 
 const Index = () => {
+  const products = getProducts();
   const featuredProducts = products.filter(p => p.featured);
+  const scrollSectionRef = useRef<HTMLElement>(null);
+  const trustBarRef = useRef<HTMLElement>(null);
+  const featuredCollectionRef = useRef<HTMLElement>(null);
+  const energyGuideRef = useRef<HTMLElement>(null);
+  const mainRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const positionSections = () => {
+      if (trustBarRef.current && scrollSectionRef.current && featuredCollectionRef.current && energyGuideRef.current) {
+        const viewportHeight = window.innerHeight;
+        const trustBarTop = viewportHeight - 69;
+        trustBarRef.current.style.top = `${trustBarTop}px`;
+        // Position scroll effect section right after trust bar ends
+        scrollSectionRef.current.style.top = `${viewportHeight}px`;
+        scrollSectionRef.current.style.marginTop = "0px";
+        // Position Featured Collection after scroll effect section (150vh + viewportHeight)
+        const scrollSectionHeight = viewportHeight * 1.5; // 150vh
+        const featuredCollectionTop = viewportHeight + scrollSectionHeight;
+        featuredCollectionRef.current.style.top = `${featuredCollectionTop}px`;
+        // Calculate Featured Collection height and position Energy Guide after it
+        setTimeout(() => {
+          if (featuredCollectionRef.current && energyGuideRef.current && mainRef.current) {
+            const featuredCollectionHeight = featuredCollectionRef.current.offsetHeight;
+            const energyGuideTop = featuredCollectionTop + featuredCollectionHeight;
+            energyGuideRef.current.style.top = `${energyGuideTop}px`;
+            // Set main container height to accommodate all sections
+            const energyGuideHeight = energyGuideRef.current.offsetHeight;
+            // Set height without including the large decorative squares to prevent endless scroll
+            mainRef.current.style.minHeight = `${energyGuideTop + energyGuideHeight}px`;
+          }
+          // Note: Resize animation state is handled in the top useEffect via handleScroll
+        }, 150);
+      }
+    };
+
+    positionSections();
+    window.addEventListener("resize", positionSections);
+    return () => window.removeEventListener("resize", positionSections);
+  }, []);
   const featuredHeadingStyles = style({
     fontSize: "[40px]",
     color: "white",
@@ -39,7 +76,7 @@ const Index = () => {
     }}>
       <Header />
 
-      <main style={{ flex: 1 }}>
+      <main ref={mainRef} style={{ flex: 1, position: "relative", minHeight: "calc(100vh - 80px)" }}>
         {/* Hero Section */}
         <section
           style={{
@@ -106,22 +143,18 @@ const Index = () => {
               width: "auto",
               padding: "0 12px",
             }}>
-                <Heading
-                  level={1}
-                  styles={style({
-                    fontSize: "[80px]",
-                  })}
-                >
+              <Heading level={1} className="hero-title" styles={style({ fontSize: "[80px]" })}>
                 We don't sell luxury — we sell energy.
               </Heading>
             </div>
             <Text
+              className="page-hero-subtitle shop-subtitle-color page-hero-subtitle-spacing"
               styles={style({
-                font: "body-3xl",
                 fontWeight: "normal",
-                color: "[rgba(153, 153, 153, 1)]",
+                color: "white",
                 textAlign: "center",
                 marginBottom: "[20px]",
+                lineHeight: "[1.6]",
               })}
             >
               {homeCopy.heroDescription}
@@ -135,7 +168,7 @@ const Index = () => {
             }}>
               <a href="/shop" style={{ textDecoration: 'none' }}>
                 <div style={{
-                  backgroundColor: '#D1A95B',
+                  backgroundColor: '#CB6D47',
                   color: 'black',
                   padding: '12px 24px',
                   borderRadius: '8px',
@@ -159,7 +192,7 @@ const Index = () => {
                   fontWeight: '600',
                   textAlign: 'center',
                   cursor: 'pointer',
-                  border: '1px solid #D1A95B',
+                  border: '1px solid #CB6D47',
                   display: 'inline-block'
                 }}>
                   Our Story
@@ -171,11 +204,17 @@ const Index = () => {
 
         {/* Trust Bar */}
         <section
+          ref={trustBarRef}
           style={{
-            borderTop: "0.5px solid #D1A95B",
-            borderBottom: "0.5px solid #D1A95B",
+            position: "absolute",
+            left: 0,
+            right: 0,
+            width: "100%",
+            borderTop: "0.5px solid #CB6D47",
+            borderBottom: "0.5px solid #CB6D47",
             backgroundColor: "black",
             padding: "24px 0",
+            zIndex: 9998,
           }}
         >
           <div style={{
@@ -199,7 +238,7 @@ const Index = () => {
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <Text>◆</Text>
-                <Text>Free express over $300</Text>
+                <Text>Free express shipping over $500</Text>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <Text>✧</Text>
@@ -209,8 +248,183 @@ const Index = () => {
           </div>
         </section>
 
+        {/* Scroll Effect Section */}
+        <section
+          ref={scrollSectionRef}
+          className="handcrafted-section in-view"
+          style={{
+            backgroundColor: `${primarycolor}40`,
+            height: "auto",
+            paddingTop: "50px",
+            paddingBottom: "50px",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            transition: "background-color 0.6s ease-out, top 0.3s ease-out",
+            position: "absolute",
+            left: 0,
+            right: 0,
+            width: "100%",
+            overflow: "visible",
+          }}
+        >
+          <div
+            className="handcrafted-content"
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 24,
+              width: "85vw",
+              maxWidth: "85vw",
+              padding: "0 16px",
+              position: "relative",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: 12,
+                textAlign: "center",
+                position: "relative",
+                zIndex: 2,
+              }}
+            >
+              <Heading
+                level={2}
+                styles={style({
+                  fontSize: "[48px]",
+                  color: "white",
+                  fontWeight: "bold",
+                })}
+              >
+                Handcrafted Excellence
+              </Heading>
+              <Text
+                styles={style({
+                  fontSize: "[20px]",
+                  color: "rgba(255, 255, 255, 0.9)",
+                  lineHeight: "[1.6]",
+                })}
+              >
+                Each piece is carefully crafted to channel the energy you need most
+              </Text>
+            </div>
+            <div
+              style={{
+                position: "relative",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                marginTop: "80px",
+                width: "500px",
+                height: "500px",
+                minHeight: "500px",
+              }}
+            >
+              <div
+                style={{
+                  position: "absolute",
+                  width: "520px",
+                  height: "520px",
+                  aspectRatio: "1 / 1",
+                  backgroundColor: "#BE974B",
+                  zIndex: -2,
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                }}
+              />
+              <img
+                src={ruleImage}
+                alt="Handcrafted bracelet"
+                className="rule-image-spin"
+                style={{
+                  width: "100%",
+                  height: "auto",
+                  objectFit: "contain",
+                  display: "block",
+                  opacity: 0.9,
+                  position: "relative",
+                  zIndex: -1,
+                  filter: "drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5)) drop-shadow(0 20px 40px rgba(0, 0, 0, 0.4)) drop-shadow(0 40px 80px rgba(0, 0, 0, 0.3))",
+                }}
+              />
+            </div>
+            <Text
+              className="handcrafted-text"
+              styles={style({
+                fontSize: "[18px]",
+                color: "rgba(255, 255, 255, 0.9)",
+                lineHeight: "[1.6]",
+                textAlign: "center",
+                width: "640px",
+                maxWidth: "100%",
+                marginTop: "48px",
+                position: "relative",
+                zIndex: 2,
+              })}
+            >
+              Aether & Stone was born in Armenia, where mountains, silence, and ancient stone shape both land and spirit. Inspired by this balance between the unseen and the enduring, we create minimal jewelry designed to ground, calm, and accompany everyday life. Each piece carries the quiet strength of nature — made to be worn, felt, and lived with.
+            </Text>
+            
+            {/* Decorative squares at the bottom - 50% outside viewport */}
+            <div
+              style={{
+                position: "absolute",
+                bottom: "-10000px",
+                left: "50%",
+                transform: "translateX(-50%)",
+                display: "flex",
+                gap: "12000px",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "100%",
+                pointerEvents: "none",
+                zIndex: 10,
+              }}
+            >
+              <div
+                style={{
+                  width: "20000px",
+                  height: "20000px",
+                  backgroundColor: "rgba(255, 255, 255, 0.5)",
+                  border: "2px solid rgba(255, 255, 255, 0.8)",
+                  transform: "rotate(45deg)",
+                  transition: "opacity 0.6s ease-out, transform 0.6s ease-out",
+                }}
+              />
+              <div
+                style={{
+                  width: "20000px",
+                  height: "20000px",
+                  backgroundColor: "rgba(255, 255, 255, 0.5)",
+                  border: "2px solid rgba(255, 255, 255, 0.8)",
+                  transform: "rotate(45deg)",
+                  transition: "opacity 0.6s ease-out, transform 0.6s ease-out",
+                }}
+              />
+            </div>
+          </div>
+        </section>
+
         {/* Featured Collection */}
-        <section style={{ padding: "96px 0", backgroundColor: "black" }}>
+        <section 
+          ref={featuredCollectionRef}
+          style={{ 
+            padding: "96px 0", 
+            backgroundColor: "black",
+            position: "absolute",
+            left: 0,
+            right: 0,
+            width: "100%",
+            transition: "top 0.3s ease-out",
+          }}
+        >
           <div style={{
             maxWidth: 1200,
             margin: "0 auto",
@@ -224,15 +438,26 @@ const Index = () => {
                 {homeCopy.featuredDescription}
               </Text>
             </div>
-            <div style={{
+            <div className="featured-products-grid" style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-              gap: 24,
-              maxWidth: 1024,
+              gridTemplateColumns: "repeat(3, 1fr)",
+              gap: 56,
+              maxWidth: "85vw",
               margin: "0 auto",
             }}>
-              {featuredProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
+              {featuredProducts.map((product, index) => (
+                <ProductCard 
+                  key={product.id} 
+                  product={product} 
+                  hoverImage={
+                    index === 0 ? hoverGreenImage : 
+                    index === 1 ? obsidianImage : 
+                    index === 2 ? brownImage : 
+                    index === 3 ? purpleImage : 
+                    index === 4 ? brownImage : 
+                    null
+                  } 
+                />
               ))}
             </div>
             <div style={{ display: "flex", justifyContent: "center", paddingTop: 32 }}>
@@ -246,12 +471,20 @@ const Index = () => {
         </section>
 
         {/* Energy Guide CTA */}
-        <section style={{
-          padding: "96px 0",
-          backgroundColor: "#141414",
-          borderTop: "1px solid #2E2E2E",
-          borderBottom: "1px solid #2E2E2E",
-        }}>
+        <section 
+          ref={energyGuideRef}
+          style={{
+            padding: "96px 0",
+            backgroundColor: "#141414",
+            borderTop: "1px solid #2E2E2E",
+            borderBottom: "1px solid #2E2E2E",
+            position: "absolute",
+            left: 0,
+            right: 0,
+            width: "100%",
+            transition: "top 0.3s ease-out",
+          }}
+        >
             <div style={{
               maxWidth: 1200,
               margin: "0 auto",
@@ -264,7 +497,7 @@ const Index = () => {
               <Text
                 styles={style({
                   font: "body-lg",
-                  color: "neutral-subdued",
+                  color: "white",
                   textAlign: "center",
                   marginTop: 16,
                 })}
@@ -272,7 +505,7 @@ const Index = () => {
                 {homeCopy.energyGuideDescription}
               </Text>
             <div style={{ marginTop: 24, display: "flex", justifyContent: "center" }}>
-              <a href="/energy" style={{ textDecoration: 'none' }}>
+              <a href="/shop" style={{ textDecoration: 'none' }}>
                 <Button size="L" variant="secondary" UNSAFE_className="highlight-button">
                   Explore Energy Guide
                 </Button>

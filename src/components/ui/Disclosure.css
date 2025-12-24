@@ -1,0 +1,57 @@
+.ui-disclosure {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.ui-disclosure-header {
+  width: 100%;
+  padding: 16px;
+  background: transparent;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: inherit;
+  transition: background-color 0.2s ease;
+}
+
+.ui-disclosure-header:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.ui-disclosure-header:focus-visible {
+  outline: 2px solid var(--primarycolor, #CB6D47);
+  outline-offset: -2px;
+}
+
+.ui-disclosure-header::after {
+  content: '▼';
+  font-size: 0.75rem;
+  transition: transform 0.2s ease;
+  margin-left: auto;
+  opacity: 0.6;
+}
+
+.ui-disclosure-header[aria-expanded="true"]::after {
+  transform: rotate(180deg);
+}
+
+.ui-disclosure-title {
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+.ui-disclosure-panel-wrapper {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ui-disclosure-panel {
+  padding: 16px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+
+

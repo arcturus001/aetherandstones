@@ -1,0 +1,39 @@
+.ui-action-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  color: inherit;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+  outline: none;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.ui-action-button:focus-visible {
+  outline: 2px solid var(--primarycolor, #CB6D47);
+  outline-offset: 2px;
+}
+
+.ui-action-button:hover:not(:disabled) {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.ui-action-button--quiet {
+  opacity: 1;
+}
+
+.ui-action-button--quiet:hover:not(:disabled) {
+  opacity: 1;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.ui-action-button--disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
