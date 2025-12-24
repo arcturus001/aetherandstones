@@ -1,0 +1,180 @@
+@layer reset {
+    /* 
+    @layer reset for the lowest specificty 
+    use @import "reset.css" layer(reset); for external reset stylesheets
+    */
+
+	*, 
+    *::before, 
+    *::after {
+        box-sizing: border-box; /* This will make elements match the sizing model of design tools */
+      }
+	
+      html, body {
+        font-family: var(--s2-font-family-sans, adobe-clean-spectrum-vf), adobe-clean-variable, adobe-clean, ui-sans-serif, system-ui, sans-serif;
+        margin: 0;
+      }
+
+      h1, h2, h3, h4, h5, h6 {
+        text-wrap: balance;
+      }
+
+      /* Playfair Display for headings */
+      h1, h2, h3 {
+        font-family: 'Playfair Display', serif;
+        font-weight: 600;
+      }
+
+      h4, h5, h6 {
+        font-family: 'Playfair Display', serif;
+        font-weight: 500;
+      }
+
+      p {
+        text-wrap: pretty;
+      }
+
+      a {
+        color: #3b63fb; /* This is accent-content-color-default (blue-900)*/
+      }
+
+      /* These elements don't inherit font-family from body by default */
+      input, button, textarea, select, kbd {
+        font: inherit;
+      }
+
+      kbd {
+        display: inline-block;
+        color-scheme: normal;
+        background-color: light-dark(#e9e9e9, #393939); /* This is neutral-subtle-background-color-default (gray-100 and gray-300) */
+        color: light-dark(#292929, #dbdbdb); /* This is neutral-content-color-default (gray-800)*/
+        font-size: 12px; /* this is font-size-75 */
+        height: 24px; /* This is component-height-75 */
+        line-height: 24px; /* Match the height to vertically center text */
+        border-radius: 7px; /* this is corner-radius-400 */
+        padding: 0 8px;
+      }
+}
+/* App Layout Styles */
+
+html, body {
+  height: 100%;
+  overflow: auto; /* Allow scrolling */
+}
+
+/* Primary palette */
+:root {
+  --primarycolor: #D1A95B;
+}
+
+header {
+  padding: 0 12px;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+}
+
+.spectrum-logo {
+  width: 32px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: url("data:image/svg+xml,%3Csvg width='41' height='36' viewBox='0 0 41 36' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cg clip-path='url(%23clip0_528_8065)'%3E%3Cpath d='M40.5026 21.7987C41.1584 22.2079 41.1572 23.1631 40.5004 23.5706L21.5972 35.3001C20.9233 35.7183 20.0705 35.7183 19.3965 35.3001L0.493308 23.5706C-0.163478 23.1631 -0.16466 22.2079 0.491115 21.7987L5.60403 18.6086L19.4026 27.1051C20.0736 27.5183 20.9201 27.5183 21.5911 27.1051L35.3897 18.6086L40.5026 21.7987Z' fill='%23B2D2FB'/%3E%3Cpath d='M29.7396 10.2825L21.5987 15.3221C20.9258 15.7386 20.0753 15.7388 19.4024 15.3225L11.2542 10.2825L7.05166 12.8687C6.38959 13.2761 6.3895 14.2384 7.0515 14.6459L19.4036 22.2501C20.0761 22.664 20.9246 22.663 21.596 22.2474L33.888 14.6397C34.5461 14.2324 34.5473 13.2756 33.8903 12.8666L29.7396 10.2825Z' fill='%237BA7FD'/%3E%3Cpath d='M21.5943 0.470449C20.922 0.0509897 20.0702 0.0484205 19.3954 0.463818L12.6462 4.61874C11.9852 5.02567 11.9841 5.98618 12.6442 6.39465L19.3488 10.5437C20.0226 10.9606 20.8744 10.9601 21.5476 10.5422L28.2384 6.38928C28.895 5.98169 28.8962 5.02655 28.2404 4.61742L21.5943 0.470449Z' fill='%233562FF'/%3E%3C/g%3E%3Cdefs%3E%3CclipPath id='clip0_528_8065'%3E%3Crect width='41' height='36' fill='white'/%3E%3C/clipPath%3E%3C/defs%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.header-start {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.header-middle {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  min-width: 112px; /* 28 * 4px = 112px */
+}
+
+.header-end {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  padding: 10px 12px 10px 10px;
+}
+
+.app-main {
+  flex: 1;
+  padding: 0 12px;
+  display: flex;
+  flex-direction: row;
+  min-height: 0; /* Important: allows flex child to shrink below content size */
+}
+
+.content-area {
+  flex: 1;
+  background-color: light-dark(white, #181818); /* base token */
+  border-radius: 16px;
+  box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.04);
+  margin-bottom: 48px; /* 12 * 4px */
+  padding: 160px; /* 40 * 4px */
+  overflow-y: auto;
+  height: 100vh;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.featured-heading {
+  font-size: 40px !important;
+}
+.energy-heading {
+  font-size: 40px !important;
+}
+.highlight-button {
+  background-color: var(--primarycolor) !important;
+  color: #000 !important;
+  font-weight: 700;
+}
+
+.cart-button-wrapper svg {
+  fill: white;
+}
+.cart-button-wrapper svg path {
+  fill: white !important;
+}
+.property-badge {
+  background-color: black;
+  border-radius: 999px;
+  padding: 4px 12px;
+  border: 1px solid var(--badge-color, #D1A95B);
+  color: var(--badge-color, #D1A95B);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Animations */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

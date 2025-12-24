@@ -1,0 +1,44 @@
+{
+  "name": "protopack-template-s2-react",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "packageManager": "pnpm@10.17.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "tsc --noEmit && eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@identity/imslib": "^0.47.0",
+    "@react-spectrum/s2": "^0.12.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-grab": "^0.0.54",
+    "react-router-dom": "^7.11.0",
+    "uuid": "^13.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.66",
+    "@types/react-dom": "^18.2.22",
+    "@typescript-eslint/eslint-plugin": "^7.2.0",
+    "@typescript-eslint/parser": "^7.2.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "eslint": "^8.57.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.6",
+    "lightningcss": "^1.27.0",
+    "typescript": "^5.2.2",
+    "unplugin-parcel-macros": "latest",
+    "vite": "^5.2.0",
+    "vite-plugin-checker": "^0.11.0",
+    "vite-plugin-mkcert": "^1.17.8"
+  },
+  "pnpm": {
+    "overrides": {
+      "@react-aria/collections": "3.0.0",
+      "@react-aria/landmark": "3.0.2"
+    }
+  }
+}
