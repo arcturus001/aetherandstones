@@ -1,0 +1,80 @@
+---
+description: Code verification and quality checks
+alwaysApply: true
+---
+
+# Code Verification Rules
+
+## Required: Verify All Code Changes
+
+After making any code changes, you must verify the changes by running linting and build commands to ensure code quality and prevent breaking changes.
+
+### Run Verification Commands
+
+Whenever you make code changes, you MUST:
+
+1. **Run the linter** to check for code quality issues:
+   ```bash
+   npm run lint
+   ```
+
+2. **Run the build** to verify the code compiles correctly:
+   ```bash
+   npm run build
+   ```
+
+### Fix All Issues
+
+You MUST fix all issues exposed by these verification commands before considering the task complete:
+
+- ✅ **Fix all linting errors** - Address every error and warning reported by the linter
+- ✅ **Fix all build errors** - Resolve any compilation or build failures
+- ✅ **Verify the fixes** - Re-run the commands after fixing to ensure all issues are resolved
+
+### When to Run Verification
+
+Run verification commands after:
+- Creating new files or components
+- Modifying existing code
+- Refactoring code
+- Changing dependencies or configuration
+- Any other code changes that could affect the build or code quality
+
+### Example Workflow
+
+```bash
+# 1. Make your code changes
+# ... edit files ...
+
+# 2. Run linter
+npm run lint
+
+# 3. Fix any linting issues
+# ... fix errors ...
+
+# 4. Run build
+npm run build
+
+# 5. Fix any build issues
+# ... fix errors ...
+
+# 6. Verify everything passes
+npm run lint && npm run build
+```
+
+## Why This Matters
+
+- **Prevents Breaking Changes**: Catches errors before they reach production
+- **Maintains Code Quality**: Ensures consistent code style and best practices
+- **Faster Development**: Identifies issues early when they're easier to fix
+- **Team Collaboration**: Keeps the codebase in a working state for all developers
+
+## Metadata
+
+```yaml
+metadata:
+  priority: critical
+  category: quality-assurance
+  enforcement: strict
+  applies_to: all_code_changes
+```

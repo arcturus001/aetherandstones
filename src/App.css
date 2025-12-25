@@ -566,6 +566,7 @@ button:hover {
   -webkit-transition: opacity 0.8s ease-out 0.2s, -webkit-transform 0.8s ease-out 0.2s;
 }
 
+/* Mobile screen size: 500px - 375px and below */
 /* Mobile navigation - Hide desktop nav on screens 500px and smaller */
 @media (max-width: 500px) {
   /* Hero title font size on mobile */
@@ -590,7 +591,9 @@ button:hover {
   
   .main-header {
     padding: 12px 16px !important;
+    padding-right: 16px !important;
     overflow: visible !important;
+    box-sizing: border-box !important;
   }
   
   /* Ensure header right container doesn't overflow */
@@ -598,11 +601,239 @@ button:hover {
     flex-shrink: 0 !important;
     min-width: auto !important;
     max-width: none !important;
+    padding-right: 0 !important;
+    margin-right: 0 !important;
   }
   
-  /* Move cart button 80px to the left on mobile */
+  /* Move cart button 80px to the left on viewports up to 500px */
   .cart-button-wrapper {
     margin-left: -80px !important;
+  }
+  
+  /* Ensure hamburger button is always visible and within viewport */
+  .hamburger-button {
+    position: relative !important;
+    right: 0 !important;
+    margin-right: 0 !important;
+    padding: 8px !important;
+    flex-shrink: 0 !important;
+  }
+  
+  /* Ensure main content fits within viewport */
+  main {
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
+    box-sizing: border-box !important;
+  }
+  
+  /* Handcrafted section - ensure background expands to fit content */
+  .handcrafted-section {
+    min-height: auto !important;
+    height: auto !important;
+    padding-top: 32px !important;
+    padding-bottom: 32px !important;
+    overflow-x: hidden !important;
+  }
+  
+  .handcrafted-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 16px !important;
+    box-sizing: border-box !important;
+  }
+  
+  .handcrafted-text {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 16px !important;
+    box-sizing: border-box !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+  
+  /* Energy Guide cards - fit within mobile viewport */
+  .energy-guide-grid,
+  section[style*="gridTemplateColumns"],
+  section[style*="grid-template-columns"],
+  section[style*="display: grid"] {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    box-sizing: border-box !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    overflow-x: hidden !important;
+  }
+  
+  /* Energy info cards container - responsive width with 16px padding on mobile, hug content */
+  .energy-guide-grid > div,
+  section[style*="gridTemplateColumns"] > div,
+  section[style*="grid-template-columns"] > div,
+  section[style*="display: grid"] > div {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    min-height: auto !important;
+    height: auto !important;
+    box-sizing: border-box !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+  
+  /* About page content sections - responsive width with 16px padding on mobile */
+  .responsive-content-width {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+    box-sizing: border-box !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+  
+  /* About page content divs - responsive width, fit viewport */
+  .responsive-content-width > div {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+  
+  /* Cart item actions - stack quantity below price on mobile */
+  .cart-item-actions {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 16px !important;
+  }
+  
+  .cart-item-price {
+    width: 100% !important;
+    align-items: flex-start !important;
+  }
+  
+  .cart-quantity-selector {
+    width: 100% !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+  }
+  
+  /* About page full bleed image - square on mobile, left-aligned */
+  main > div[style*="width: 100vw"] {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    margin-left: calc(-50vw + 50%) !important;
+    margin-right: calc(-50vw + 50%) !important;
+    margin-top: 0 !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+    aspect-ratio: 1 / 1 !important;
+    height: auto !important;
+  }
+  
+  main > div[style*="width: 100vw"] > img {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: left center !important;
+    display: block !important;
+  }
+  
+  /* Ensure Energy Guide main container doesn't overflow */
+  main[style*="padding"] {
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
+  }
+  
+  /* Energy card content - ensure it fits */
+  section[style*="gridTemplateColumns"] > div > div {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  
+  /* Energy card inner content */
+  section[style*="gridTemplateColumns"] > div[style*="borderRadius"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+  
+  /* Handcrafted image container - 80% of viewport width on mobile */
+  .handcrafted-image-container {
+    width: 80vw !important;
+    height: 80vw !important;
+    min-height: 80vw !important;
+    max-width: 80vw !important;
+    box-sizing: border-box !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+  
+  .handcrafted-image-background {
+    width: calc(80vw + 20px) !important;
+    height: calc(80vw + 20px) !important;
+  }
+  
+  /* Ensure headings fit within mobile viewport */
+  .handcrafted-content h2 {
+    font-size: 32px !important;
+    line-height: 1.2 !important;
+    padding: 0 16px !important;
+    box-sizing: border-box !important;
+  }
+  
+  .handcrafted-content p {
+    padding: 0 16px !important;
+    box-sizing: border-box !important;
+  }
+  
+  /* Featured products carousel on mobile - horizontal scrollable */
+  .featured-products-grid {
+    display: flex !important;
+    flex-direction: row !important;
+    grid-template-columns: none !important;
+    gap: 16px !important;
+    max-width: 100vw !important;
+    width: 100% !important;
+    padding: 0 16px !important;
+    margin: 0 !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    scroll-snap-type: x mandatory !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important; /* Firefox */
+    -ms-overflow-style: none !important; /* IE and Edge */
+  }
+  
+  .featured-products-grid::-webkit-scrollbar {
+    display: none !important; /* Chrome, Safari, Opera */
+  }
+  
+  /* Each product card in carousel - 1.2 items per view */
+  .featured-products-grid > * {
+    flex: 0 0 calc(83.33% - 8px) !important; /* 1/1.2 = 83.33%, minus half gap */
+    min-width: calc(83.33% - 8px) !important;
+    max-width: calc(83.33% - 8px) !important;
+    scroll-snap-align: start !important;
+  }
+  
+  /* Products grid (shop page) - keep 1 column on mobile */
+  .products-grid {
+    grid-template-columns: 1fr !important;
+    gap: 32px !important;
+    max-width: 100% !important;
+    padding: 0 16px !important;
   }
   
   /* Ensure logo container hugs the logo content */
@@ -618,6 +849,63 @@ button:hover {
     white-space: nowrap !important;
     overflow: visible !important;
     text-overflow: clip !important;
+  }
+}
+
+/* Move cart button 80px to the left on viewports 375px to 500px */
+@media (min-width: 375px) and (max-width: 500px) {
+  .cart-button-wrapper {
+    margin-left: -80px !important;
+  }
+}
+
+/* Hero title font size for very small viewports (375px and below) */
+@media (max-width: 375px) {
+  .hero-title {
+    font-size: 42px !important;
+    line-height: 1.2 !important;
+  }
+  
+  /* Header width constraints for 375px and below */
+  .main-header {
+    max-width: 375px !important;
+    width: 100% !important;
+    padding: 12px 12px !important;
+    box-sizing: border-box !important;
+    overflow: visible !important;
+  }
+  
+  /* Ensure hamburger menu is visible */
+  .hamburger-button {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    flex-shrink: 0 !important;
+    position: relative !important;
+    z-index: 10 !important;
+    margin-left: 4px !important;
+    padding: 8px !important;
+  }
+  
+  /* Ensure header right container fits within 375px */
+  .header-right-container {
+    flex-shrink: 0 !important;
+    min-width: auto !important;
+    max-width: none !important;
+    padding-right: 0 !important;
+    margin-right: 0 !important;
+    gap: 4px !important;
+  }
+  
+  /* Adjust logo container to fit */
+  .logo-container {
+    flex-shrink: 1 !important;
+    min-width: 0 !important;
+    padding-left: 0 !important;
+  }
+  
+  .logo-text {
+    font-size: 16px !important;
   }
 }
 
@@ -656,6 +944,7 @@ button:hover {
   
   .main-header {
     padding: 12px 16px !important;
+    padding-right: 16px !important;
     box-sizing: border-box !important;
     overflow: visible !important;
   }
@@ -746,25 +1035,6 @@ button:hover {
     padding-right: 16px !important;
   }
   
-  /* Handcrafted section - ensure background expands to fit content */
-  .handcrafted-section {
-    min-height: auto !important;
-    height: auto !important;
-    padding-top: 32px !important;
-    padding-bottom: 32px !important;
-  }
-  
-  .handcrafted-content {
-    width: 100% !important;
-    max-width: 100% !important;
-    padding: 0 16px !important;
-  }
-  
-  .handcrafted-text {
-    width: 100% !important;
-    max-width: 100% !important;
-    padding: 0 16px !important;
-  }
   
   /* Keep logo text on one line on mobile */
   .logo-text {
@@ -777,9 +1047,16 @@ button:hover {
     padding-left: 24px !important;
   }
   
-  /* Ensure header right container has 24px right padding */
+  /* Ensure header right container has proper spacing but doesn't push hamburger off screen */
   .header-right-container {
-    padding-right: 24px !important;
+    padding-right: 0 !important;
+    margin-right: 0 !important;
+  }
+  
+  /* Ensure hamburger button stays visible */
+  .hamburger-button {
+    margin-right: 0 !important;
+    padding-right: 0 !important;
   }
   
   .logo-container {
@@ -809,6 +1086,7 @@ button:hover {
 /* Mobile menu drawer styles */
 .mobile-menu {
   overflow: hidden !important;
+  display: none !important;
 }
 
 .mobile-menu-open {
@@ -823,13 +1101,11 @@ button:hover {
 
 /* Mobile menu link hover effects */
 @media (max-width: 500px) {
-  .mobile-menu a:hover,
-  .mobile-menu button:hover {
-    background-color: rgba(209, 169, 91, 0.1) !important;
+  .mobile-menu a:hover {
+    background-color: rgba(203, 109, 71, 0.1) !important;
   }
   
-  .mobile-menu a,
-  .mobile-menu button {
+  .mobile-menu a {
     transition: background-color 0.2s ease !important;
   }
 }

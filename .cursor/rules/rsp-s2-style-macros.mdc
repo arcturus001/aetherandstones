@@ -1,0 +1,105 @@
+---
+alwaysApply: true
+---
+
+# React Spectrum S2 Style Macro Rules
+
+## Import & Basic Usage
+
+- Import: `import {style} from '@react-spectrum/s2/style' with {type: 'macro'};`
+- **For Spectrum 2 components**: Use `styles` prop: `<Text styles={style({font: 'body-sm'})}>`
+- **For native HTML elements**: Use `className` prop: `<div className={style({backgroundColor: 'base', color: 'neutral'})}>`
+- Generates atomic CSS classes, reused across app
+- Always use double quotes in style objects for consistency
+
+## Colors
+
+### Background Colors (backgroundColor)
+
+- Prefer semantic: `base`, `layer-1`, `layer-2`, `elevated`, `accent`, `neutral`, `negative`, `positive`, `informative`, `yellow`
+- Subtle variants: `accent-subtle`, `neutral-subtle`, `negative-subtle`, etc.
+- Color palette: `gray`, `red`, `orange`, `yellow`, `chartreuse`, `celery`, `green`, `seafoam`, `cyan`, `blue`, `indigo`, `purple`, `fuchsia`, `magenta`, `pink`, `turquoise`, `cinnamon`, `brown`, `silver`
+- Each has `-subtle` variant
+
+### Text Colors (color)
+
+- Use: `accent`, `neutral`, `neutral-subdued`, `negative`, `disabled`, `heading`, `title`, `body`, `detail`, `code`
+
+## Spacing
+
+- import {space} from '../style' with {type: 'macro'};
+- Then look up the spacing values from the macro.
+
+## Typography
+
+- Font shorthand: `font: 'heading-xl'`, `font: 'body'`, `font: 'ui-sm'`
+- Scales: `ui-xs` to `ui-3xl`, `body-2xs` to `body-3xl`, `heading-2xs` to `heading-3xl`, `title-xs` to `title-3xl`, `detail-sm` to `detail-xl`, `code-sm` to `code-xl`
+- Override individual props: `fontWeight: 'bold'`
+
+## Conditional Styles
+
+### Static Conditions (media queries)
+
+```javascript
+style({
+  padding: {
+    default: 8,
+    lg: 32, // 1024px breakpoint
+  },
+});
+```
+
+### Runtime Conditions
+
+```javascript
+// Variant props
+let styles = style({
+  backgroundColor: {
+    variant: {
+      primary: "accent",
+      secondary: "neutral",
+    },
+  },
+});
+// Usage: styles({variant: "primary"})
+
+// Boolean conditions (is* prefix)
+backgroundColor: {
+  default: "gray-100",
+  isSelected: "gray-900",
+}
+// Usage: styles({isSelected: true})
+```
+
+### Nested Conditions
+
+```javascript
+backgroundColor: {
+  default: "base",
+  isSelected: {
+    default: "neutral",
+    isEmphasized: "accent",
+    isDisabled: "disabled",
+  },
+}
+```
+
+## Reusing Styles
+
+- Extract to const objects: `const stack = {display: 'flex', alignItems: 'center'} as const;`
+- Spread: `style({...stack, columnGap: 4})`
+- Custom macros: Import with `{type: 'macro'}`, export functions returning style objects
+
+## Built-in Utilities
+
+- `focusRing()`: Standard Spectrum focus ring styles
+- Import: `import {style, focusRing} from '@react-spectrum/s2/style' with {type: 'macro'};`
+
+## Best Practices
+
+- **CRITICAL**: Use `styles` prop for Spectrum 2 components, `className` prop for HTML elements
+- Use semantic colors over global colors
+- Stick to 4px spacing grid
+- Prefer style macro over separate CSS files
+- Use TypeScript autocomplete for values
+- Extract common patterns to reusable objects/macros

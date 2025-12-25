@@ -27,19 +27,23 @@ const Index = () => {
         // Position scroll effect section right after trust bar ends
         scrollSectionRef.current.style.top = `${viewportHeight}px`;
         scrollSectionRef.current.style.marginTop = "0px";
-        // Position Featured Collection after scroll effect section (150vh + viewportHeight)
-        const scrollSectionHeight = viewportHeight * 1.5; // 150vh
-        const featuredCollectionTop = viewportHeight + scrollSectionHeight;
-        featuredCollectionRef.current.style.top = `${featuredCollectionTop}px`;
-        // Calculate Featured Collection height and position Energy Guide after it
+        
+        // Wait for DOM to render, then measure actual scroll section height
         setTimeout(() => {
-          if (featuredCollectionRef.current && energyGuideRef.current && mainRef.current) {
+          if (scrollSectionRef.current && featuredCollectionRef.current && energyGuideRef.current && mainRef.current) {
+            // Get actual height of the handcrafted section
+            const scrollSectionTop = scrollSectionRef.current.offsetTop;
+            const scrollSectionHeight = scrollSectionRef.current.offsetHeight;
+            // Position Featured Collection at the bottom of the handcrafted section
+            const featuredCollectionTop = scrollSectionTop + scrollSectionHeight;
+            featuredCollectionRef.current.style.top = `${featuredCollectionTop}px`;
+            
+            // Calculate Featured Collection height and position Energy Guide after it
             const featuredCollectionHeight = featuredCollectionRef.current.offsetHeight;
             const energyGuideTop = featuredCollectionTop + featuredCollectionHeight;
             energyGuideRef.current.style.top = `${energyGuideTop}px`;
             // Set main container height to accommodate all sections
             const energyGuideHeight = energyGuideRef.current.offsetHeight;
-            // Set height without including the large decorative squares to prevent endless scroll
             mainRef.current.style.minHeight = `${energyGuideTop + energyGuideHeight}px`;
           }
           // Note: Resize animation state is handled in the top useEffect via handleScroll
@@ -76,7 +80,7 @@ const Index = () => {
     }}>
       <Header />
 
-      <main ref={mainRef} style={{ flex: 1, position: "relative", minHeight: "calc(100vh - 80px)" }}>
+      <main ref={mainRef} style={{ flex: 1, position: "relative", minHeight: "calc(100vh - 80px)", overflowX: "hidden", maxWidth: "100vw", boxSizing: "border-box" }}>
         {/* Hero Section */}
         <section
           style={{
@@ -315,6 +319,7 @@ const Index = () => {
               </Text>
             </div>
             <div
+              className="handcrafted-image-container"
               style={{
                 position: "relative",
                 display: "flex",
@@ -327,6 +332,7 @@ const Index = () => {
               }}
             >
               <div
+                className="handcrafted-image-background"
                 style={{
                   position: "absolute",
                   width: "520px",
@@ -362,7 +368,7 @@ const Index = () => {
                 color: "rgba(255, 255, 255, 0.9)",
                 lineHeight: "[1.6]",
                 textAlign: "center",
-                width: "640px",
+                width: "100%",
                 maxWidth: "100%",
                 marginTop: "48px",
                 position: "relative",
@@ -371,44 +377,6 @@ const Index = () => {
             >
               Aether & Stone was born in Armenia, where mountains, silence, and ancient stone shape both land and spirit. Inspired by this balance between the unseen and the enduring, we create minimal jewelry designed to ground, calm, and accompany everyday life. Each piece carries the quiet strength of nature — made to be worn, felt, and lived with.
             </Text>
-            
-            {/* Decorative squares at the bottom - 50% outside viewport */}
-            <div
-              style={{
-                position: "absolute",
-                bottom: "-10000px",
-                left: "50%",
-                transform: "translateX(-50%)",
-                display: "flex",
-                gap: "12000px",
-                alignItems: "center",
-                justifyContent: "center",
-                width: "100%",
-                pointerEvents: "none",
-                zIndex: 10,
-              }}
-            >
-              <div
-                style={{
-                  width: "20000px",
-                  height: "20000px",
-                  backgroundColor: "rgba(255, 255, 255, 0.5)",
-                  border: "2px solid rgba(255, 255, 255, 0.8)",
-                  transform: "rotate(45deg)",
-                  transition: "opacity 0.6s ease-out, transform 0.6s ease-out",
-                }}
-              />
-              <div
-                style={{
-                  width: "20000px",
-                  height: "20000px",
-                  backgroundColor: "rgba(255, 255, 255, 0.5)",
-                  border: "2px solid rgba(255, 255, 255, 0.8)",
-                  transform: "rotate(45deg)",
-                  transition: "opacity 0.6s ease-out, transform 0.6s ease-out",
-                }}
-              />
-            </div>
           </div>
         </section>
 

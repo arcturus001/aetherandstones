@@ -1,0 +1,55 @@
+---
+alwaysApply: true
+---
+
+# Spectrum 2 design system
+
+**CRITICAL**: Use sentence case for everything. Only use title case when it clarifies that we’re speaking about a specific, official entity (such as a title or name).
+
+## Accessiblity
+
+- This project is WCAG 2.2 AA compliant
+
+## Attention hierarchy
+
+- Prioritize a single focal point of high attention on a page. Refrain from adding multiple high-attention elements.
+- Common component sizes are XL, L, M, S, and XS, where M is the default size. Component sizes can be mixed to create hierarchy. Larger components draw more attention.
+- Button variants from high attention to low attention: accent, primary, secondary, action button, icon-only action button, quet icon-only action button.
+
+## Color
+
+- Gray-25, gray-50, and gray-75 are reserved for background layers.
+- Gray-100, gray-200, and gray-300 are reserved for lower contrast component background progressions or borders.
+- Gray-800 and gray-900 are reserved for higher contrast component backgrounds such as text and active borders. This ensures that components are always visible, regardless of the background color.
+- There are differences in how backgrounds should be colored depending on the use cases of the interface. For webpages or browsing context it's gray-25, gray-50, and gray-25 with dropshadow being the top-most layer. For tools or editing context it's gray-100, gray-50, gray-25, and gray-25 with dropshadow being the top-most layer.
+
+## Typography
+
+- Heading is the largest item on the page, reserved for the broadest message.
+- Title is used for essential text items on the page, such as wayfinding or context-setting.
+- Body is primarily used for blocks of text, and for the text within many Spectrum components.
+- Detail is for supportive elements like labels and metadata.
+
+- The weight of Heading is ExtraBold
+- The weight of titles, file names, user names, and button labels is Bold.
+- The weight of action buttons, badges, and tags, is Medium
+- The weight of body text, or any content that's entered by users, is editable, or longer in form (for example, text fields and text areas).
+
+- Body text has a line height of 1.5x, while Detail text has a line height of 1.3x
+
+## Object styles
+
+- There are 3 rounding styles: default(8px), small(4px), and full(object height/2)
+- There are 2 rounding styles for containers only: 10px and 16px
+- Nested objects should alway have smaller rounding than their direct parents
+
+- There are 2 Border sizes: medium(2px, default) and small(1px), small is generally used for table cells only.
+- Use large border (4px) for long form content.
+
+## Spacing
+
+- Instead of dividers, spacing is used as the primary way to group and divide content. Different spacing values establish rhythm and create hierarchy within a page.
+- Use CSS grids to divide content at the top level and use flex box for everything else.
+- 16px for padding in general
+- 32px is the step adove 16px for padding
+- 40px is the step above 32px for padding

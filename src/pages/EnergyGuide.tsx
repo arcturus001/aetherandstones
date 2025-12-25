@@ -38,6 +38,7 @@ const EnergyGuide = () => {
         />
 
         <section
+          className="energy-guide-grid"
           style={style({
             display: "grid",
             gridTemplateColumns: "repeat(auto-fit, minmax(480px, 1fr))",

@@ -1,0 +1,256 @@
+---
+alwaysApply: true
+---
+
+## Rule: Use Spectrum 2 components across all screens
+
+All UI built in this project must use Spectrum 2 components from `@react-spectrum/s2` rather than raw HTML controls or third-party UI kits. Generate new pages using the same component set used in `src/S2ComonentExamples.tsx`, plus the official dialog/overlay components and patterns.
+
+References:
+
+- React Spectrum for Spectrum 2 documentation: https://react-spectrum.adobe.com/beta/s2/index.html
+- Style macro: https://react-spectrum.adobe.com/beta/s2/styling.html
+- Dialogs: https://react-spectrum.adobe.com/beta/s2/Dialog.html
+
+### Base component set (must-use)
+
+Use only these components unless there is a strong justification to add a new Spectrum 2 component.
+
+- Typography and layout
+  - Regular html flex, grid, `Divider`
+- Buttons and actions
+  - `Button`, `LinkButton`, `ActionButton`, `ActionButtonGroup`, `ToggleButton`, `ToggleButtonGroup`
+- Menus and selection
+  - `ActionMenu`, `Menu`, `MenuItem`, `MenuTrigger`, `SubmenuTrigger`, `Picker`, `PickerItem`
+- Tables and trees
+  - `TableView`, `TableHeader`, `TableBody`, `Column`, `Row`, `Cell`
+  - `TreeView`, `TreeViewItem`, `TreeViewItemContent`
+- Icons and illustrations
+  - Icons from `@react-spectrum/s2/icons/*` (e.g., `Edit`, `FileText`, `Folder`)
+
+Don't use emojis instead of icons, even if the icon doesn't exist. If a required widget is missing from this list but exists in Spectrum 2, prefer adding that Spectrum component rather than building custom HTML.
+
+### Use built-in component props instead of custom implementations
+
+Always check the component's available props in the React Spectrum documentation before implementing custom logic. Many common UI patterns are already handled by component props.
+
+#### Examples of what NOT to do:
+
+```tsx
+// ❌ Don't manually implement loading states
+<Button onPress={handleSubmit}>
+  {isLoading ? (
+    <>
+      <ProgressCircle size="S" />
+      Loading...
+    </>
+  ) : (
+    'Submit'
+  )}
+</Button>
+
+// ❌ Don't manually handle disabled states during loading
+<Button
+  onPress={handleSubmit}
+  isDisabled={isLoading || !isValid}
+>
+  Submit
+</Button>
+```
+
+#### Examples of what TO do:
+
+```tsx
+// ✅ Use isPending prop for loading states
+<Button
+  onPress={handleSubmit}
+  isPending={isLoading}
+  isDisabled={!isValid}
+>
+  Submit
+</Button>
+
+// ✅ Use built-in validation props
+<TextField
+  label="Email"
+  value={email}
+  onChange={setEmail}
+  isRequired
+  validationState={emailError ? 'invalid' : 'valid'}
+  errorMessage={emailError}
+/>
+```
+
+#### Before implementing custom logic, check if the component has props for:
+
+- Loading/pending states (`isPending`, `isLoading`)
+- Validation (`validationState`, `errorMessage`, `isRequired`)
+- Accessibility (`aria-label`, `aria-describedby`)
+- Visual states (`variant`, `size`, `isEmphasized`)
+- Interactive states (`isDisabled`, `isReadOnly`, `isSelected`)
+
+### Dialogs and overlays (required patterns)
+
+Use Spectrum 2 dialog primitives for all modal/alert flows. Do not use `window.alert/confirm` or custom modals.
+
+- Simple confirmation: `DialogTrigger` + `AlertDialog`
+
+```tsx
+<DialogTrigger>
+  <ActionButton>Delete</ActionButton>
+  <AlertDialog title="Delete" variant="destructive" primaryActionLabel="Delete">
+    Are you sure?
+  </AlertDialog>
+</DialogTrigger>
+```
+
+- Custom dialog content: `DialogTrigger` + `Dialog`
+
+```tsx
+<DialogTrigger>
+  <ActionButton>Open</ActionButton>
+  <Dialog>
+    {({ close }) => (
+      <>
+        <Heading>Title</Heading>
+        <Content>Body</Content>
+        <ButtonGroup>
+          <Button variant="secondary" onPress={close}>
+            Cancel
+          </Button>
+          <Button variant="accent" onPress={close}>
+            Confirm
+          </Button>
+        </ButtonGroup>
+      </>
+    )}
+  </Dialog>
+</DialogTrigger>
+```
+
+- Managed lifecycle: `DialogContainer`
+
+```tsx
+<DialogContainer onDismiss={() => setOpen(false)}>
+  {isOpen && (
+    <AlertDialog title="Info" primaryActionLabel="OK">
+      Saved successfully.
+    </AlertDialog>
+  )}
+</DialogContainer>
+```
+
+- Popovers, tooltips, menus: use `Popover`, `Tooltip`, and `MenuTrigger` rather than hand-rolled overlays.
+
+### Imports and theming
+
+- Import components from `@react-spectrum/s2` and icons from `@react-spectrum/s2/icons/*`.
+- Import the style macro from `@react-spectrum/s2/style` with `{ type: 'macro' }`.
+- Ensure `@react-spectrum/s2/page.css` is imported once at the application root.
+- Wrap your app in a `Provider` component to load fonts, set background, and handle locale.
+
+```tsx
+import {
+  Button, Heading, Menu, MenuItem, MenuTrigger, Provider
+} from "@react-spectrum/s2";
+import Edit from "@react-spectrum/s2/icons/Edit";
+import { style } from "@react-spectrum/s2/style" with { type: "macro" };
+import "@react-spectrum/s2/page.css";
+```
+
+### Do
+
+- Build UIs with the components above and style them with the `style()` macro (`styles` on S2 components, `className` on native elements).
+- Use `MenuTrigger`/`SubmenuTrigger` for hierarchical menus.
+- Use `Picker` with `PickerItem` for selects.
+- Use `TableView`/`TreeView` for tabular/tree data rather than `<table>`/lists.
+
+### Don’t
+
+- Don’t introduce raw HTML controls like `<button>`, `<select>`, `<table>` for primary UI.
+- Don’t use browser dialogs (`window.alert/confirm/prompt`).
+- Don’t add third-party UI libraries (e.g., MUI, Chakra) for components that exist in Spectrum 2.
+
+### Assistant behavior (auto-fix guidance)
+
+- When asked to scaffold a page, choose components from the base set above.
+- If a feature needs a component not listed but available in Spectrum 2, add that S2 component and note it in the PR.
+- Replace raw controls with S2 equivalents during edits.
+
+### PR checklist
+
+- Uses only Spectrum 2 components listed above (or newly added S2 components with justification).
+- Dialog flows implemented with `DialogTrigger` + `Dialog`/`AlertDialog` (or `DialogContainer` where appropriate).
+- No raw HTML controls for primary UI. No browser dialogs. No new UI libraries.
+- Styling applied via Spectrum 2 style macro; theme CSS present at app root.
+- App wrapped in `<Provider>` component with appropriate background and locale settings.
+
+## Provider Setup Details
+
+### Provider setup (required)
+
+Wrap your app in a Spectrum 2 `Provider` component to load fonts for the user's locale and apply the appropriate background layer. When using S2 with other Spectrum versions, ensure the S2 provider is the inner-most provider.
+
+```tsx
+import { Provider, Button } from "@react-spectrum/s2";
+
+function App() {
+  return (
+    // Wrap app in a <Provider> to load fonts, set background, set locale, etc.
+    <Provider background="base">
+      <Button variant="accent" onPress={() => alert("Hey there!")}>
+        Hello Spectrum 2!
+      </Button>
+    </Provider>
+  );
+}
+```
+
+### Full-page app optimization
+
+When building a full-page S2 app that's not embedded within a larger page, import `@react-spectrum/s2/page.css` to apply the background color and color scheme to the `<html>` element instead of the `<Provider>`. This ensures the page has styles even before JavaScript loads. A `<Provider>` is still necessary in addition to `page.css` to include fonts, set locale, etc.
+
+```tsx
+// Apply S2 background to the <html> element
+import "@react-spectrum/s2/page.css";
+
+function App() {
+  return <Provider>{/* ... */}</Provider>;
+}
+```
+
+By default, this uses the base background layer. Customize by setting the `data-background` attribute on the `<html>` element:
+
+```html
+<html data-background="layer-1">
+  <!-- ... -->
+</html>
+```
+
+### Color scheme override
+
+By default, React Spectrum follows the operating system color scheme setting, supporting both light and dark mode. The `colorScheme` prop can be set on `<Provider>` to force the app to always render in a certain color scheme.
+
+```tsx
+import { Provider } from "@react-spectrum/s2";
+
+<Provider colorScheme="light">{/* your app */}</Provider>;
+```
+
+When using `page.css`, set the `data-color-scheme` attribute on the `<html>` element:
+
+```html
+<html data-color-scheme="light">
+  <!-- ... -->
+</html>
+```
+
+### Locale override
+
+By default, React Spectrum uses the browser/operating system language setting for localized strings, date and number formatting, and to determine layout direction (left-to-right or right-to-left). Override by setting the `locale` prop on the `<Provider>`.
+
+```tsx
+import { Provider } from "@react-spectrum/s2";
+
+<Provider locale="en-US">{/* your app */}</Provider>;
+```

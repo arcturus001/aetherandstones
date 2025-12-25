@@ -1,36 +1,19 @@
-import { ActionButton, SearchField, Text, Button } from "./ui";
+import { ActionButton, Text, Button } from "./ui";
 import { ShoppingCart } from "./ui/icons";
 import { primarycolor } from "../styles/primaryColor";
 import { style } from "../utils/styles";
-import { useEffect, useState, type CSSProperties } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { isAuthenticated, setAuthenticated } from "../utils/auth";
+import { isUserLoggedIn } from "../utils/userAuth";
 
 export const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const [cartCount, setCartCount] = useState(() => Number(localStorage.getItem("cart-count") ?? "0"));
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [cartCount, setCartCount] = useState(() => Number(localStorage.getItem("cart-count") ?? "0"));
   const isAdminRoute = location.pathname.startsWith("/admin");
   const isAdminAuthenticated = isAuthenticated();
-
-  const cartButtonStyles: CSSProperties & Record<string, string> = {
-    "--spectrum-actionbutton-background-color-default": "transparent",
-    "--spectrum-actionbutton-background-color-hover": "transparent",
-    "--spectrum-actionbutton-background-color-focus": "transparent",
-    "--spectrum-actionbutton-background-color-active": "transparent",
-    "--spectrum-actionbutton-content-color-default": "white",
-    "--spectrum-actionbutton-content-color-hover": "white",
-    "--spectrum-actionbutton-content-color-focus": "white",
-    "--spectrum-actionbutton-padding": "4px 8px",
-    "--spectrum-actionbutton-min-height": "auto",
-    border: `1px solid ${primarycolor}`,
-    borderRadius: "999px",
-    padding: "2px",
-    backgroundColor: cartCount === 0 ? "black" : "var(--primarycolor)",
-    color: "white",
-    "--iconPrimary": "white",
-  };
 
   useEffect(() => {
     const handler = (event: Event) => {
@@ -49,23 +32,8 @@ export const Header = () => {
     setIsMenuOpen(false);
   }, [location.pathname, location.search]);
 
-  // Close menu when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
-      if (isMenuOpen && !target.closest('.mobile-menu') && !target.closest('.hamburger-button')) {
-        setIsMenuOpen(false);
-      }
-    };
-    if (isMenuOpen) {
-      document.addEventListener('click', handleClickOutside);
-      return () => document.removeEventListener('click', handleClickOutside);
-    }
-  }, [isMenuOpen]);
-
   const handleLogout = () => {
     setAuthenticated(false);
-    // Clear session flag on logout
     sessionStorage.removeItem("admin-session-active");
     navigate("/");
     setIsMenuOpen(false);
@@ -110,6 +78,23 @@ export const Header = () => {
       }} />
     </div>
   );
+  const cartButtonStyles = {
+    "--spectrum-actionbutton-background-color-default": "transparent",
+    "--spectrum-actionbutton-background-color-hover": "transparent",
+    "--spectrum-actionbutton-background-color-focus": "transparent",
+    "--spectrum-actionbutton-background-color-active": "transparent",
+    "--spectrum-actionbutton-content-color-default": "white",
+    "--spectrum-actionbutton-content-color-hover": "white",
+    "--spectrum-actionbutton-content-color-focus": "white",
+    "--spectrum-actionbutton-padding": "4px 8px",
+    "--spectrum-actionbutton-min-height": "auto",
+    border: `1px solid ${primarycolor}`,
+    borderRadius: "999px",
+    padding: "2px",
+    backgroundColor: cartCount === 0 ? "black" : primarycolor,
+    color: "white",
+    "--iconPrimary": "white",
+  };
   
   return (
     <header
@@ -134,7 +119,7 @@ export const Header = () => {
         width: "100%",
         minWidth: "100%",
         maxWidth: "100%",
-        padding: "16px 24px",
+        padding: "16px 16px",
         height: 80,
         backgroundColor: "rgba(20, 20, 20, 0.8)",
         transition: "background-color 0.3s ease",
@@ -166,7 +151,7 @@ export const Header = () => {
           >
             Aether & Stones
           </Text>
-          {isAdminAuthenticated && (
+          {isAdminRoute && isAdminAuthenticated && (
             <Text
               styles={style({
                 fontFamily: "[\"Adobe Clean\", \"Helvetica Neue\", \"Arial\", sans-serif]",
@@ -290,8 +275,21 @@ export const Header = () => {
               Energy Guide
             </ActionButton>
           </Link>
+        <Link 
+          to="/about" 
+          style={style({ 
+            textDecoration: 'none', 
+            color: 'white',
+            display: 'inline-block'
+          })}
+        >
+          <ActionButton isQuiet styles={style({ color: 'white' })}>
+            About
+          </ActionButton>
+        </Link>
+        {isUserLoggedIn() && (
           <Link 
-            to="/about" 
+            to="/account" 
             style={style({ 
               textDecoration: 'none', 
               color: 'white',
@@ -299,14 +297,15 @@ export const Header = () => {
             })}
           >
             <ActionButton isQuiet styles={style({ color: 'white' })}>
-              About
+              My Account
             </ActionButton>
           </Link>
-        </nav>
+        )}
+      </nav>
       )}
 
-      {/* Search and Cart/Logout */}
-      <div className="header-right-container" style={style({ display: "flex", alignItems: "center", gap: 12, flexShrink: 0, minWidth: 0, flexDirection: "row", paddingRight: 24 })}>
+      {/* Cart/Logout and Hamburger Menu */}
+      <div className="header-right-container" style={style({ display: "flex", alignItems: "center", gap: 12, flexShrink: 0, minWidth: 0, flexDirection: "row", paddingRight: 0 })}>
         {isAdminRoute && isAdminAuthenticated ? (
           // Logout Button for Admin
           <Button
@@ -324,27 +323,18 @@ export const Header = () => {
           </Button>
         ) : (
           // Regular Cart Button
-          <>
-            <div style={{ opacity: 0 }}>
-              <SearchField
-                aria-label="Search products"
-                placeholder="Search stones..."
-                style={style({ width: 200 })}
-              />
+          <Link to="/cart" style={style({ textDecoration: "none", color: "inherit", marginRight: 16 })}>
+            <div style={cartButtonStyles} className="cart-button-wrapper">
+              <ActionButton aria-label="Shopping cart" isQuiet>
+                <span style={style({ marginRight: 8 })}>Cart</span>
+                <ShoppingCart />
+                {cartCount > 0 && <span className="header-cart-badge">{cartCount}</span>}
+              </ActionButton>
             </div>
-            <Link to="/cart" style={style({ textDecoration: "none", color: "inherit" })}>
-              <div style={cartButtonStyles} className="cart-button-wrapper">
-                <ActionButton aria-label="Shopping cart" isQuiet>
-                  <span style={style({ marginRight: 8 })}>Cart</span>
-                  <ShoppingCart />
-                  {cartCount > 0 && <span className="header-cart-badge">{cartCount}</span>}
-                </ActionButton>
-              </div>
-            </Link>
-          </>
+          </Link>
         )}
         
-        {/* Hamburger button - only visible on mobile */}
+        {/* Hamburger button - visible on mobile */}
         <button
           className="hamburger-button"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -530,6 +520,24 @@ export const Header = () => {
             >
               About
             </Link>
+            {isUserLoggedIn() && (
+              <Link
+                to="/account"
+                onClick={() => setIsMenuOpen(false)}
+                style={style({
+                  textDecoration: 'none',
+                  color: 'white',
+                  padding: "16px",
+                  border: "1px solid #2E2E2E",
+                  borderRadius: "8px",
+                  textAlign: "left",
+                  fontSize: "16px",
+                  transition: "all 0.2s",
+                })}
+              >
+                My Account
+              </Link>
+            )}
           </div>
         )}
       </div>

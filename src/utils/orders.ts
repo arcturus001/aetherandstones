@@ -4,6 +4,9 @@
 
 import { RecentOrder } from "./mockData";
 
+// Re-export RecentOrder for use in other modules
+export type { RecentOrder } from "./mockData";
+
 const ORDERS_STORAGE_KEY = "admin-orders";
 
 /**
@@ -21,6 +24,14 @@ export const getOrders = (): RecentOrder[] => {
   
   // Return empty array if no stored orders
   return [];
+};
+
+/**
+ * Get orders for a specific user
+ */
+export const getUserOrders = (userId: string): RecentOrder[] => {
+  const allOrders = getOrders();
+  return allOrders.filter(order => order.userId === userId);
 };
 
 /**
@@ -52,6 +63,8 @@ export const updateOrderStatus = (orderId: string, newStatus: RecentOrder['statu
   if (orderIndex > -1) {
     orders[orderIndex].status = newStatus;
     saveOrders(orders);
+    // Dispatch event for UI updates
+    window.dispatchEvent(new CustomEvent("order-status-updated", { detail: { orderId, newStatus } }));
     return true;
   }
   
@@ -65,7 +78,42 @@ export const addOrder = (order: RecentOrder): void => {
   const orders = getOrders();
   orders.push(order);
   saveOrders(orders);
+  // Dispatch event for UI updates
+  window.dispatchEvent(new CustomEvent("new-order-created", { detail: order }));
 };
+
+/**
+ * Get order by ID
+ */
+export const getOrderById = (orderId: string): RecentOrder | undefined => {
+  const orders = getOrders();
+  return orders.find(order => order.id === orderId);
+};
+
+/**
+ * Link orders to a user by email (for when user registers/logs in after placing order)
+ */
+export const linkOrdersToUser = (userId: string, email: string): number => {
+  const orders = getOrders();
+  let linkedCount = 0;
+  
+  orders.forEach(order => {
+    // Link orders that match email and don't have a userId yet
+    if ((order.customerEmail?.toLowerCase() === email.toLowerCase() || 
+         order.email?.toLowerCase() === email.toLowerCase()) && 
+        !order.userId) {
+      order.userId = userId;
+      linkedCount++;
+    }
+  });
+  
+  if (linkedCount > 0) {
+    saveOrders(orders);
+  }
+  
+  return linkedCount;
+};
+
 
 
 

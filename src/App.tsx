@@ -25,6 +25,9 @@ import About from "./pages/About";
 import ShippingReturns from "./pages/ShippingReturns";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
+import OrderSuccess from "./pages/OrderSuccess";
+import Login from "./pages/Login";
+import Account from "./pages/Account";
 import Admin from "./pages/Admin";
 import ProductPreview from "./pages/ProductPreview";
 import { style } from "./utils/styles";
@@ -70,6 +73,9 @@ function App() {
           <Route path="/shipping" element={<ShippingReturns />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
+          <Route path="/order-success" element={<OrderSuccess />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/account" element={<Account />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/admin/preview/:productId" element={<ProductPreview />} />
           <Route path="/framework" element={<ComponentsReadme />} />

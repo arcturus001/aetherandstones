@@ -161,6 +161,7 @@ const Cart = () => {
                 return (
                   <div
                     key={productId}
+                    className="cart-item-card"
                     style={style({
                       display: "flex",
                       gap: 16,
@@ -249,6 +250,7 @@ const Cart = () => {
                       </div>
 
                       <div
+                        className="cart-item-actions"
                         style={style({
                           display: "flex",
                           justifyContent: "space-between",
@@ -256,7 +258,7 @@ const Cart = () => {
                           marginTop: "auto",
                         })}
                       >
-                        <div style={style({ display: "flex", alignItems: "center", gap: 12 })}>
+                        <div className="cart-quantity-selector" style={style({ display: "flex", alignItems: "center", gap: 12 })}>
                           <Text
                             styles={style({
                               fontSize: "[14px]",
@@ -311,7 +313,7 @@ const Cart = () => {
                           </div>
                         </div>
 
-                        <div style={style({ display: "flex", flexDirection: "column", alignItems: "end" })}>
+                        <div className="cart-item-price" style={style({ display: "flex", flexDirection: "column", alignItems: "end" })}>
                           {product.originalPrice && product.originalPrice > product.price && (
                             <Text
                               styles={style({

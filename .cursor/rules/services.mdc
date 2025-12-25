@@ -1,0 +1,59 @@
+---
+description: Service integration requests
+alwaysApply: true
+---
+
+# Services
+
+If a user asks for a service, like Firefly, Photoshop, etc., you should use the Services MCP server to get the service to see if it exists there. If it does, you should use the service. If it doesn't, you should inform the user and request next steps.
+
+When calling Adobe services (Firefly, Stock, etc.) that require API authentication, use IMS for both the bearer token and API key:
+
+## Authentication Pattern
+
+All Adobe service APIs should use:
+- **Authorization Header**: `Bearer ${IMS.tokenData.token}` - The user's IMS access token
+- **x-api-key Header**: `IMS.adobeid.client_id` - The IMS client ID from configuration
+
+## Implementation
+
+// ✅ Correct - Get both from IMS using react hooks
+
+import useIMS from "./contexts/useIMS.ts";
+
+// Use in components via the consumer hook
+const ims = useIMS();
+
+// Access token data
+const token = ims.tokenData?.token; 
+const apiKey = ims.adobeid.client_id;
+
+await serviceClient.post('/endpoint', requestBody, {
+  'Authorization': `Bearer ${token}`,
+  'x-api-key': apiKey
+})
+
+The call is likely implemented in the service ts file.
+You may need to pass the token and api key to the service function.
+Review the specific service file to see how to pass the token and api key.
+
+
+// ❌ Incorrect - Don't use separate API key environment variables
+const apiKey = import.meta.env.VITE_FIREFLY_API_KEY; // Don't do this
+const apiKey = import.meta.env.VITE_SERVICE_API_KEY; // Don't do this
+
+## Why?
+
+For internal Adobe tooling, the IMS client ID serves as the API key for Adobe services. This eliminates the need for service-specific API keys and keeps authentication centralized through IMS.
+
+## Applies To
+
+- Firefly API (all versions)
+- Adobe Stock API
+- Other Adobe Creative Cloud APIs
+- Any Adobe service that requires x-api-key header
+
+metadata:
+  priority: high
+  category: authentication
+  enforcement: strict

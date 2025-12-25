@@ -1,0 +1,88 @@
+---
+description: Ensure only available Spectrum icons are used in the project
+globs: ["**/*.tsx", "**/*.ts", "**/*.jsx", "**/*.js"]
+alwaysApply: true
+---
+
+# Spectrum Icons Usage Rule
+
+This rule ensures that only available Spectrum icons are used throughout the project, preventing broken icon imports and maintaining consistency.
+
+<rule>
+name: spectrum_icons_only
+description: Enforce usage of only available Spectrum icons from approved sources
+filters:
+  # Match React/TypeScript files that might contain icon imports
+  - type: file_extension
+    pattern: "\\.(tsx?|jsx?)$"
+  # Match icon import statements
+  - type: content
+    pattern: "import.*from.*['\"].*icons?.*['\"]"
+
+actions:
+
+  - type: suggest
+    message: |
+      ## Available Icon Sources
+
+      ### 1. React Spectrum S2 Icons
+      ```typescript
+      // ✅ Correct usage
+      import Edit from "@react-spectrum/s2/icons/Edit";
+      import Contrast from "@react-spectrum/s2/icons/Contrast";
+      import FileText from "@react-spectrum/s2/icons/FileText";
+      import Folder from "@react-spectrum/s2/icons/Folder";
+      ```
+
+      ### 2. SWC React Workflow Icons  
+      ```typescript
+      // ✅ Correct usage
+      import { IconHome } from "@swc-react/icons-workflow/Home";
+      import { IconAsset } from "@swc-react/icons-workflow/Asset";
+      import { IconApps } from "@swc-react/icons-workflow/Apps";
+      import { IconMore } from "@swc-react/icons-workflow/More";
+      import { IconSend } from "@swc-react/icons-workflow/Send";
+      import { IconLayers } from "@swc-react/icons-workflow/Layers";
+      import { IconAttach } from "@swc-react/icons-workflow/Attach";
+      import { IconMicrophone } from "@swc-react/icons-workflow/Microphone";
+      ```
+
+      ### 3. Custom SVG Icons (when Spectrum icons don't exist)
+      ```typescript
+      // ✅ Correct usage - custom icons as React components
+      import { IconAiChat } from "../../assets/svgs/iconAiChat.tsx";
+      import { IconCreate } from "../../assets/svgs/iconCreate.tsx";
+      import { IconCampaign } from "../../assets/svgs/iconCampaign.tsx";
+      ```
+
+      ## Icon Usage Guidelines
+
+      1. **Prefer Spectrum icons first** - Check if the icon exists in React Spectrum S2 or SWC React Workflow
+      2. **Use custom SVG icons only when necessary** - When Spectrum doesn't have the needed icon
+      3. **Create proper React components** - Custom icons should be React components, not direct SVG imports
+      4. **Follow naming conventions** - Use PascalCase for icon component names
+      5. **Organize custom icons** - Place all custom SVG icons in `assets/svgs/` directory
+
+examples:
+  - input: |
+      // ❌ Bad: Unknown icon library
+      import { FaHome } from "react-icons/fa";
+      
+      // ❌ Bad: Direct SVG import  
+      import homeIcon from "./home.svg";
+      
+      // ❌ Bad: Non-existent Spectrum icon
+      import CustomIcon from "@react-spectrum/s2/icons/CustomIcon";
+    output: |
+      // ✅ Good: Use available Spectrum icons
+      import { IconHome } from "@swc-react/icons-workflow/Home";
+      
+      // ✅ Good: Custom icon as React component
+      import { IconCustom } from "../../assets/svgs/iconCustom.tsx";
+
+metadata:
+  priority: high
+  version: 1.0
+  category: icons
+  enforcement: strict
+</rule>

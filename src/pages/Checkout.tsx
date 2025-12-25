@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import { PageHero } from "../components/PageHero";
@@ -9,11 +9,17 @@ import { getProducts } from "../utils/products";
 import {
   getCartItems,
   getCartTotal,
+  clearCart,
   type CartItem,
 } from "../utils/cart";
 import { primarycolor } from "../styles/primaryColor";
+import { sendOrderNotificationEmail, type OrderDetails } from "../utils/email";
+import { addOrder } from "../utils/orders";
+import { getCurrentUser } from "../utils/userAuth";
+import type { RecentOrder, OrderItem } from "../utils/mockData";
 
 const Checkout = () => {
+  const navigate = useNavigate();
   const products = getProducts();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [cartProducts, setCartProducts] = useState(
@@ -22,6 +28,7 @@ const Checkout = () => {
       return { ...item, product };
     })
   );
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -75,10 +82,114 @@ const Checkout = () => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission - would navigate to payment page
-    console.log("Form submitted:", formData, { shippingMethod });
+    
+    // Validate required fields
+    if (!formData.fullName || !formData.email || !formData.address || 
+        !formData.city || !formData.state || !formData.postalCode || 
+        !formData.country || !formData.cardNumber || !formData.expiryDate || 
+        !formData.cvv || !formData.cardholderName) {
+      alert("Please fill in all required fields");
+      return;
+    }
+
+    setIsProcessing(true);
+
+    try {
+      // Prepare order details
+      const orderDetails: OrderDetails = {
+        shipping: {
+          fullName: formData.fullName,
+          email: formData.email,
+          address: formData.address,
+          city: formData.city,
+          state: formData.state,
+          postalCode: formData.postalCode,
+          country: formData.country,
+        },
+        items: cartProducts
+          .filter(({ product }) => product !== undefined)
+          .map(({ product, quantity }) => ({
+            id: product!.id,
+            name: product!.name,
+            description: product!.description,
+            quantity,
+            price: product!.price,
+            originalPrice: product!.originalPrice,
+            stone: product!.stone,
+            properties: product!.properties,
+            image: product!.image,
+          })),
+        subtotal,
+        shippingCost: shipping,
+        total,
+        shippingMethod,
+      };
+
+      // Create order record
+      const currentUser = getCurrentUser();
+      const orderId = `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
+      
+      const orderItems: OrderItem[] = cartProducts
+        .filter(({ product }) => product !== undefined)
+        .map(({ product, quantity }) => ({
+          productId: product!.id,
+          productName: product!.name,
+          quantity,
+          price: product!.price,
+          stone: product!.stone,
+          properties: product!.properties,
+        }));
+
+      const newOrder: RecentOrder = {
+        id: orderId,
+        userId: currentUser?.id,
+        customerName: formData.fullName,
+        customerEmail: formData.email,
+        items: orderItems,
+        shippingAddress: {
+          fullName: formData.fullName,
+          address: formData.address,
+          city: formData.city,
+          state: formData.state,
+          postalCode: formData.postalCode,
+          country: formData.country,
+        },
+        subtotal,
+        shippingCost: shipping,
+        total,
+        shippingMethod,
+        date: new Date().toISOString(),
+        status: "gathering",
+      };
+
+      // Save order
+      addOrder(newOrder);
+
+      // Send email notification
+      console.log("Attempting to send order notification email...");
+      const emailSent = await sendOrderNotificationEmail(orderDetails);
+      console.log("Email sent result:", emailSent);
+      
+      // Clear cart after order processing
+      clearCart();
+      
+      // Navigate to success page with order info and prompt for login if not logged in
+      navigate("/order-success", {
+        state: {
+          orderDetails,
+          orderId,
+          userId: currentUser?.id,
+          needsLogin: !currentUser,
+        },
+      });
+    } catch (error) {
+      console.error("Error processing order:", error);
+      alert("An error occurred while processing your order. Please try again.");
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const shipping = isFreeShippingEligible ? 0 : (shippingMethod === "express" ? 30 : 10);
@@ -583,12 +694,14 @@ const Checkout = () => {
               variant="accent"
               size="L"
               onClick={handleSubmit}
+              isPending={isProcessing}
+              isDisabled={isProcessing}
               styles={style({
                 width: "100%",
                 marginTop: 16,
               })}
             >
-              Pay ${total.toFixed(2)}
+              {isProcessing ? "Processing..." : `Pay $${total.toFixed(2)}`}
             </Button>
           </div>
         </section>
