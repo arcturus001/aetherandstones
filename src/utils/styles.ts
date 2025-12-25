@@ -10,9 +10,6 @@ function styleToInline(styles: Record<string, string | number | undefined | null
   for (const [key, value] of Object.entries(styles)) {
     if (value === undefined || value === null) continue;
     
-    // Handle CSS property names (convert camelCase to kebab-case)
-    const cssKey = key.replace(/([A-Z])/g, '-$1').toLowerCase();
-    
     // Handle special cases
     if (key === 'marginX') {
       result.marginLeft = parseValue(value);
@@ -34,6 +31,10 @@ function styleToInline(styles: Record<string, string | number | undefined | null
       result.paddingBottom = parseValue(value);
       continue;
     }
+    
+    // Use camelCase keys directly for React inline styles
+    // React expects camelCase properties (e.g., fontSize, not font-size)
+    const cssKey = key as keyof React.CSSProperties;
     
     // Handle values wrapped in brackets (arbitrary values)
     const parsedValue = parseValue(value);

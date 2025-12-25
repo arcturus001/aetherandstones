@@ -10,8 +10,8 @@
  * governing permissions and limitations under the License.
  */
 
-import React, { useState } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Index from "./pages/Index";
 import ProductDetail from "./pages/ProductDetail";
 import Shop from "./pages/Shop";
@@ -31,6 +31,21 @@ import Account from "./pages/Account";
 import Admin from "./pages/Admin";
 import ProductPreview from "./pages/ProductPreview";
 import { style } from "./utils/styles";
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    // Use requestAnimationFrame to ensure DOM is ready
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    });
+  }, [pathname]);
+
+  return null;
+}
 
 function App() {
   const [isDarkMode] = useState(() => {
@@ -55,6 +70,7 @@ function App() {
 
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <div style={style({
         minHeight: "[100vh]",
         backgroundColor: "#050505",
