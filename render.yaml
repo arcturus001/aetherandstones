@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: aetherandstones
+    env: static
+    buildCommand: pnpm build
+    staticPublishPath: ./dist
+    headers:
+      - path: /*
+        name: X-Robots-Tag
+        value: noindex
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
