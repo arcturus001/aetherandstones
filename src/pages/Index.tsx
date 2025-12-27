@@ -32,8 +32,15 @@ const Index = () => {
         setTimeout(() => {
           if (scrollSectionRef.current && featuredCollectionRef.current && energyGuideRef.current && mainRef.current) {
             // Get actual height of the handcrafted section
+            // Use getBoundingClientRect for more accurate measurements including padding
+            const scrollSectionRect = scrollSectionRef.current.getBoundingClientRect();
             const scrollSectionTop = scrollSectionRef.current.offsetTop;
-            const scrollSectionHeight = scrollSectionRef.current.offsetHeight;
+            // Use scrollHeight to include all content, or offsetHeight + padding
+            const scrollSectionHeight = Math.max(
+              scrollSectionRef.current.scrollHeight,
+              scrollSectionRef.current.offsetHeight,
+              scrollSectionRect.height
+            );
             // Position Featured Collection at the bottom of the handcrafted section
             const featuredCollectionTop = scrollSectionTop + scrollSectionHeight;
             featuredCollectionRef.current.style.top = `${featuredCollectionTop}px`;
@@ -42,12 +49,12 @@ const Index = () => {
             const featuredCollectionHeight = featuredCollectionRef.current.offsetHeight;
             const energyGuideTop = featuredCollectionTop + featuredCollectionHeight;
             energyGuideRef.current.style.top = `${energyGuideTop}px`;
-            // Set main container height to accommodate all sections
+            // Set main container height to accommodate all sections with extra padding
             const energyGuideHeight = energyGuideRef.current.offsetHeight;
-            mainRef.current.style.minHeight = `${energyGuideTop + energyGuideHeight}px`;
+            mainRef.current.style.minHeight = `${energyGuideTop + energyGuideHeight + 100}px`;
           }
           // Note: Resize animation state is handled in the top useEffect via handleScroll
-        }, 150);
+        }, 300);
       }
     };
 
@@ -258,19 +265,20 @@ const Index = () => {
           className="handcrafted-section in-view"
           style={{
             backgroundColor: `${primarycolor}40`,
-            height: "auto",
+            minHeight: "auto",
             paddingTop: "50px",
-            paddingBottom: "50px",
+            paddingBottom: "80px",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            justifyContent: "center",
+            justifyContent: "flex-start",
             transition: "background-color 0.6s ease-out, top 0.3s ease-out",
             position: "absolute",
             left: 0,
             right: 0,
             width: "100%",
             overflow: "visible",
+            boxSizing: "border-box",
           }}
         >
           <div
@@ -279,12 +287,13 @@ const Index = () => {
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              justifyContent: "center",
+              justifyContent: "flex-start",
               gap: 24,
               width: "85vw",
               maxWidth: "85vw",
-              padding: "0 16px",
+              padding: "0 16px 24px 16px",
               position: "relative",
+              minHeight: "fit-content",
             }}
           >
             <div
@@ -369,10 +378,12 @@ const Index = () => {
                 lineHeight: "[1.6]",
                 textAlign: "center",
                 width: "100%",
-                maxWidth: "100%",
+                maxWidth: "600px",
                 marginTop: "48px",
+                marginBottom: "24px",
                 position: "relative",
                 zIndex: 2,
+                paddingBottom: "0",
               })}
             >
               Aether & Stone was born in Armenia, where mountains, silence, and ancient stone shape both land and spirit. Inspired by this balance between the unseen and the enduring, we create minimal jewelry designed to ground, calm, and accompany everyday life. Each piece carries the quiet strength of nature — made to be worn, felt, and lived with.

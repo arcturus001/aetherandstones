@@ -36,27 +36,8 @@ function ScrollToTop() {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    // Disable browser scroll restoration
-    if ('scrollRestoration' in window.history) {
-      window.history.scrollRestoration = 'manual';
-    }
-
-    // Scroll to top after a brief delay to ensure DOM is ready
-    const timer = setTimeout(() => {
-      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-      document.documentElement.scrollTop = 0;
-      document.body.scrollTop = 0;
-      
-      // Also try scrolling any scrollable containers
-      const scrollableElements = document.querySelectorAll('[style*="overflow"]');
-      scrollableElements.forEach((el) => {
-        if (el instanceof HTMLElement) {
-          el.scrollTop = 0;
-        }
-      });
-    }, 0);
-
-    return () => clearTimeout(timer);
+    console.log('Scrolling to top');
+    window.scrollTo(0, 0);
   }, [pathname]);
 
   return null;
@@ -69,13 +50,6 @@ function App() {
     if (stored) return stored === 'dark';
     return window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
-
-  // Disable browser scroll restoration on mount
-  React.useEffect(() => {
-    if ('scrollRestoration' in window.history) {
-      window.history.scrollRestoration = 'manual';
-    }
-  }, []);
 
   // Apply theme on mount
   React.useEffect(() => {
