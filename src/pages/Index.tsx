@@ -585,11 +585,11 @@ const Index = () => {
                 {homeCopy.energyGuideDescription}
               </Text>
             <div style={{ marginTop: 24, display: "flex", justifyContent: "center" }}>
-              <a href="/shop" style={{ textDecoration: 'none' }}>
+              <Link to="/energy" style={{ textDecoration: 'none' }}>
                 <Button size="L" variant="secondary" UNSAFE_className="highlight-button">
                   Explore Energy Guide
                 </Button>
-              </a>
+              </Link>
             </div>
           </div>
         </section>
