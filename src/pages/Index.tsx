@@ -22,22 +22,23 @@ const Index = () => {
     const positionSections = () => {
       if (trustBarRef.current && scrollSectionRef.current && featuredCollectionRef.current && energyGuideRef.current) {
         const viewportHeight = window.innerHeight;
-        const trustBarTop = viewportHeight - 69;
+        // Position trust bar right after hero section ends (at viewportHeight)
+        const trustBarTop = viewportHeight;
         trustBarRef.current.style.top = `${trustBarTop}px`;
         
         // Wait for trust bar to render, then position handcrafted section after it
         setTimeout(() => {
           if (trustBarRef.current && scrollSectionRef.current) {
-            // Get trust bar's actual position and height
-            const trustBarRect = trustBarRef.current.getBoundingClientRect();
+            // Get trust bar's actual height
             const trustBarHeight = trustBarRef.current.offsetHeight;
-            const trustBarBottom = trustBarRect.top + trustBarHeight;
+            // Calculate trust bar bottom position relative to document
+            const trustBarBottom = trustBarTop + trustBarHeight;
             
             // Position scroll effect section right after trust bar ends
             scrollSectionRef.current.style.top = `${trustBarBottom}px`;
             scrollSectionRef.current.style.marginTop = "0px";
           }
-        }, 50);
+        }, 100);
         
         // Wait for DOM to render, then measure actual scroll section height
         setTimeout(() => {
@@ -127,7 +128,7 @@ const Index = () => {
               opacity: 0.7,
             }}
           />
-          <div style={{
+          <div className="hero-content-container" style={{
             position: "relative",
             zIndex: 10,
             textAlign: "center",
@@ -142,6 +143,7 @@ const Index = () => {
             margin: "0 auto",
           }}>
             <div
+              className="hero-new-collection-badge"
               style={{
                 backgroundColor: "black",
                 color: "white",
