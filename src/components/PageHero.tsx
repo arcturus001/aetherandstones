@@ -31,6 +31,7 @@ export const PageHero = ({ title, subtitle, disclaimer }: PageHeroProps) => {
           color: "white",
           marginTop: "[0px]",
           marginBottom: "[0px]",
+          textAlign: "center",
         })}
       >
         {title}

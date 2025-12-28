@@ -872,6 +872,11 @@ button:hover {
   .handcrafted-section {
     margin-top: 0 !important;
   }
+  
+  /* Center align PageHero headings on mobile */
+  .ui-heading--h1 {
+    text-align: center !important;
+  }
 }
 
 /* Hero title font size for very small viewports (375px and below) */
