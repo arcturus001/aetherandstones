@@ -4,11 +4,13 @@ import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import { ProductCard } from "../components/ProductCard";
 import { SEO } from "../components/SEO";
+import { ArrowDownBounce } from "../components/ArrowDownBounce";
 import { homeCopy } from "../data/copy";
 import { getProducts } from "../utils/products";
 import { heroImage, ruleImage, hoverGreenImage, obsidianImage, brownImage, purpleImage } from "../assets";
 import { primarycolor } from "../styles/primaryColor";
 import { useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 
 const Index = () => {
   const products = getProducts();
@@ -18,14 +20,16 @@ const Index = () => {
   const featuredCollectionRef = useRef<HTMLElement>(null);
   const energyGuideRef = useRef<HTMLElement>(null);
   const mainRef = useRef<HTMLElement>(null);
+  const heroSectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const positionSections = () => {
-      if (trustBarRef.current && scrollSectionRef.current && featuredCollectionRef.current && energyGuideRef.current) {
-        const viewportHeight = window.innerHeight;
-        // Position trust bar right after hero section ends (at viewportHeight)
-        const trustBarTop = viewportHeight;
-        trustBarRef.current.style.top = `${trustBarTop}px`;
+      if (trustBarRef.current && scrollSectionRef.current && featuredCollectionRef.current && energyGuideRef.current && heroSectionRef.current) {
+        // Get the actual hero section end position
+        const heroSectionRect = heroSectionRef.current.getBoundingClientRect();
+        const heroSectionEnd = heroSectionRect.top + heroSectionRect.height;
+        // Position trust bar right after hero section ends
+        trustBarRef.current.style.top = `${heroSectionEnd}px`;
         
         // Wait for trust bar to render, then position handcrafted section after it
         setTimeout(() => {
@@ -33,7 +37,7 @@ const Index = () => {
             // Get trust bar's actual height
             const trustBarHeight = trustBarRef.current.offsetHeight;
             // Calculate trust bar bottom position relative to document
-            const trustBarBottom = trustBarTop + trustBarHeight;
+            const trustBarBottom = heroSectionEnd + trustBarHeight;
             
             // Position scroll effect section right after trust bar ends
             scrollSectionRef.current.style.top = `${trustBarBottom}px`;
@@ -108,6 +112,7 @@ const Index = () => {
       <main ref={mainRef} style={{ flex: 1, position: "relative", minHeight: "calc(100vh - 80px)", overflowX: "hidden", maxWidth: "100vw", boxSizing: "border-box" }}>
         {/* Hero Section */}
         <section
+          ref={heroSectionRef}
           style={{
             position: "relative",
             minHeight: "calc(100vh - 80px)",
@@ -115,6 +120,7 @@ const Index = () => {
             alignItems: "center",
             justifyContent: "center",
             overflow: "hidden",
+            paddingTop: "80px", // Account for fixed header height
           }}
         >
           <div
@@ -229,7 +235,74 @@ const Index = () => {
                 </div>
               </a>
             </div>
+            {/* For Her / For Him Cards */}
+            <div className="hero-category-cards" style={{
+              display: "flex",
+              gap: 40,
+              justifyContent: "center",
+              paddingTop: 32,
+              flexWrap: "nowrap",
+            }}>
+              <Link to="/shop?category=forHer" style={{ textDecoration: 'none' }}>
+                <div style={{
+                  padding: '17px 16px 41px 16px', // Top, right, bottom, left - 16px on each side
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: 30, // Increased by 50% from 20px (20 * 1.5 = 30)
+                  transition: 'transform 0.2s',
+                  cursor: 'pointer',
+                  width: 'fit-content', // Width matches image width + padding
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }}
+                >
+                  <Text styles={style({
+                    color: 'white',
+                    fontSize: '[36px]', // Increased by 50% from 24px (24 * 1.5 = 36)
+                    fontWeight: '500',
+                    textAlign: 'center',
+                  })}>
+                    For Her
+                  </Text>
+                </div>
+              </Link>
+              <Link to="/shop?category=forHim" style={{ textDecoration: 'none' }}>
+                <div style={{
+                  padding: '17px 16px 41px 16px', // Top, right, bottom, left - 16px on each side
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: 30, // Increased by 50% from 20px (20 * 1.5 = 30)
+                  transition: 'transform 0.2s',
+                  cursor: 'pointer',
+                  width: 'fit-content', // Width matches image width + padding
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                }}
+                >
+                  <Text styles={style({
+                    color: 'white',
+                    fontSize: '[36px]', // Increased by 50% from 24px (24 * 1.5 = 36)
+                    fontWeight: '500',
+                    textAlign: 'center',
+                  })}>
+                    For Him
+                  </Text>
+                </div>
+              </Link>
+            </div>
           </div>
+          {/* Arrow Down Bounce Animation - positioned at bottom of hero section */}
+          <ArrowDownBounce />
         </section>
 
         {/* Trust Bar */}
@@ -243,7 +316,7 @@ const Index = () => {
             borderTop: "0.5px solid #CB6D47",
             borderBottom: "0.5px solid #CB6D47",
             backgroundColor: "black",
-            padding: "24px 0",
+            padding: "12px 0",
             zIndex: 9998,
           }}
         >

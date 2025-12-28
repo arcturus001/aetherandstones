@@ -853,6 +853,17 @@ button:hover {
 }
 
 /* Move cart button 80px to the left on viewports 375px to 500px */
+/* Hide For Her / For Him cards and arrow animation on mobile */
+@media (max-width: 500px) {
+  .hero-category-cards {
+    display: none !important;
+  }
+  
+  .arrow-down-bounce {
+    display: none !important;
+  }
+}
+
 @media (min-width: 375px) and (max-width: 500px) {
   .cart-button-wrapper {
     margin-left: -80px !important;

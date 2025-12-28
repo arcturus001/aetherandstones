@@ -3,7 +3,7 @@ import { ShoppingCart } from "./ui/icons";
 import { primarycolor } from "../styles/primaryColor";
 import { style } from "../utils/styles";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { isAuthenticated, setAuthenticated } from "../utils/auth";
 import { isUserLoggedIn } from "../utils/userAuth";
 
@@ -11,6 +11,8 @@ export const Header = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isShopDropdownOpen, setIsShopDropdownOpen] = useState(false);
+  const shopDropdownRef = useRef<HTMLDivElement>(null);
   const [cartCount, setCartCount] = useState(() => Number(localStorage.getItem("cart-count") ?? "0"));
   const isAdminRoute = location.pathname.startsWith("/admin");
   const isAdminAuthenticated = isAuthenticated();
@@ -30,7 +32,25 @@ export const Header = () => {
   // Close menu when route changes
   useEffect(() => {
     setIsMenuOpen(false);
+    setIsShopDropdownOpen(false);
   }, [location.pathname, location.search]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (shopDropdownRef.current && !shopDropdownRef.current.contains(event.target as Node)) {
+        setIsShopDropdownOpen(false);
+      }
+    };
+
+    if (isShopDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isShopDropdownOpen]);
 
   const handleLogout = () => {
     setAuthenticated(false);
@@ -247,22 +267,119 @@ export const Header = () => {
               display: 'inline-block'
             })}
           >
-            <ActionButton isQuiet styles={style({ color: 'white' })}>
+            <ActionButton 
+              isQuiet 
+              styles={style({ 
+                color: location.pathname === "/" ? primarycolor : 'white' 
+              })}
+            >
               Home
             </ActionButton>
           </Link>
-          <Link 
-            to="/shop" 
-            style={style({ 
-              textDecoration: 'none', 
-              color: 'white',
-              display: 'inline-block'
-            })}
-          >
-            <ActionButton isQuiet styles={style({ color: 'white' })}>
-              Shop
-            </ActionButton>
-          </Link>
+          <div ref={shopDropdownRef} style={{ position: 'relative', display: 'inline-block' }}>
+            <Link 
+              to="/shop" 
+              style={style({ 
+                textDecoration: 'none', 
+                color: 'white',
+                display: 'inline-block'
+              })}
+              onMouseEnter={() => setIsShopDropdownOpen(true)}
+            >
+              <ActionButton 
+                isQuiet 
+                styles={style({ 
+                  color: location.pathname === "/shop" ? primarycolor : 'white' 
+                })}
+              >
+                Shop
+              </ActionButton>
+            </Link>
+            {isShopDropdownOpen && (
+              <div 
+                style={style({
+                  position: 'absolute',
+                  top: '100%',
+                  left: 0,
+                  marginTop: 8,
+                  backgroundColor: 'rgba(20, 20, 20, 0.98)',
+                  backdropFilter: 'blur(16px)',
+                  WebkitBackdropFilter: 'blur(16px)',
+                  border: '1px solid #2E2E2E',
+                  borderRadius: '8px',
+                  padding: '8px 0',
+                  minWidth: '160px',
+                  zIndex: 10000,
+                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
+                })}
+                onMouseLeave={() => setIsShopDropdownOpen(false)}
+              >
+                <Link 
+                  to="/shop" 
+                  onClick={() => setIsShopDropdownOpen(false)}
+                  style={style({ 
+                    textDecoration: 'none', 
+                    color: 'white',
+                    display: 'block',
+                    padding: '12px 16px',
+                    transition: 'background-color 0.2s',
+                  })}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(203, 109, 71, 0.2)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                  }}
+                >
+                  <Text styles={style({ color: 'white', fontSize: '[14px]' })}>
+                    All Products
+                  </Text>
+                </Link>
+                <Link 
+                  to="/shop?category=forHer" 
+                  onClick={() => setIsShopDropdownOpen(false)}
+                  style={style({ 
+                    textDecoration: 'none', 
+                    color: 'white',
+                    display: 'block',
+                    padding: '12px 16px',
+                    transition: 'background-color 0.2s',
+                  })}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(203, 109, 71, 0.2)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                  }}
+                >
+                  <Text styles={style({ color: 'white', fontSize: '[14px]' })}>
+                    For Her
+                  </Text>
+                </Link>
+                <Link 
+                  to="/shop?category=forHim" 
+                  onClick={() => setIsShopDropdownOpen(false)}
+                  style={style({ 
+                    textDecoration: 'none', 
+                    color: 'white',
+                    display: 'block',
+                    padding: '12px 16px',
+                    transition: 'background-color 0.2s',
+                  })}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(203, 109, 71, 0.2)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                  }}
+                >
+                  <Text styles={style({ color: 'white', fontSize: '[14px]' })}>
+                    For Him
+                  </Text>
+                </Link>
+              </div>
+            )}
+          </div>
           <Link 
             to="/energy" 
             style={style({ 
@@ -271,7 +388,12 @@ export const Header = () => {
               display: 'inline-block'
             })}
           >
-            <ActionButton isQuiet styles={style({ color: 'white' })}>
+            <ActionButton 
+              isQuiet 
+              styles={style({ 
+                color: location.pathname === "/energy" ? primarycolor : 'white' 
+              })}
+            >
               Energy Guide
             </ActionButton>
           </Link>
@@ -283,7 +405,12 @@ export const Header = () => {
             display: 'inline-block'
           })}
         >
-          <ActionButton isQuiet styles={style({ color: 'white' })}>
+          <ActionButton 
+            isQuiet 
+            styles={style({ 
+              color: location.pathname === "/about" ? primarycolor : 'white' 
+            })}
+          >
             About
           </ActionButton>
         </Link>
@@ -296,7 +423,12 @@ export const Header = () => {
               display: 'inline-block'
             })}
           >
-            <ActionButton isQuiet styles={style({ color: 'white' })}>
+            <ActionButton 
+              isQuiet 
+              styles={style({ 
+                color: location.pathname === "/account" ? primarycolor : 'white' 
+              })}
+            >
               My Account
             </ActionButton>
           </Link>
@@ -486,7 +618,39 @@ export const Header = () => {
                 transition: "all 0.2s",
               })}
             >
-              Shop
+              All Products
+            </Link>
+            <Link
+              to="/shop?category=forHer"
+              onClick={() => setIsMenuOpen(false)}
+              style={style({
+                textDecoration: 'none',
+                color: 'white',
+                padding: "16px",
+                border: "1px solid #2E2E2E",
+                borderRadius: "8px",
+                textAlign: "left",
+                fontSize: "16px",
+                transition: "all 0.2s",
+              })}
+            >
+              For Her
+            </Link>
+            <Link
+              to="/shop?category=forHim"
+              onClick={() => setIsMenuOpen(false)}
+              style={style({
+                textDecoration: 'none',
+                color: 'white',
+                padding: "16px",
+                border: "1px solid #2E2E2E",
+                borderRadius: "8px",
+                textAlign: "left",
+                fontSize: "16px",
+                transition: "all 0.2s",
+              })}
+            >
+              For Him
             </Link>
             <Link
               to="/energy"

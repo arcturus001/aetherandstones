@@ -11,6 +11,8 @@ export interface Product {
   properties: string[];
   featured: boolean;
   inStock: boolean;
+  forHer?: boolean;
+  forHim?: boolean;
 }
 
 export const products: Product[] = [
@@ -26,6 +28,8 @@ export const products: Product[] = [
     properties: ["Protection", "Clarity", "Spirituality"],
     featured: true,
     inStock: true,
+    forHer: true,
+    forHim: false,
   },
   {
     id: "2",
@@ -38,6 +42,8 @@ export const products: Product[] = [
     properties: ["Confidence", "Willpower", "Clarity"],
     featured: true,
     inStock: true,
+    forHer: false,
+    forHim: true,
   },
   {
     id: "4",
@@ -50,6 +56,8 @@ export const products: Product[] = [
     properties: ["Love", "Compassion", "Heart Healing"],
     featured: true,
     inStock: true,
+    forHer: true,
+    forHim: false,
   },
   {
     id: "5",
@@ -62,6 +70,8 @@ export const products: Product[] = [
     properties: ["Amplification", "Clarity", "Energy"],
     featured: false,
     inStock: true,
+    forHer: true,
+    forHim: true,
   },
   {
     id: "6",
@@ -74,6 +84,8 @@ export const products: Product[] = [
     properties: ["Wisdom", "Truth", "Communication"],
     featured: false,
     inStock: false,
+    forHer: false,
+    forHim: true,
   },
 ];
 

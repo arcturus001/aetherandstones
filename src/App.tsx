@@ -37,8 +37,27 @@ function ScrollToTop() {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    console.log('Scrolling to top');
-    window.scrollTo(0, 0);
+    // Disable browser's automatic scroll restoration
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
+
+    // Use requestAnimationFrame to ensure scroll happens after render
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      // Also scroll the document element for compatibility
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    });
+    
+    // Also add a small delay as a fallback for slower renders
+    const timeoutId = setTimeout(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    }, 0);
+
+    return () => clearTimeout(timeoutId);
   }, [pathname]);
 
   return null;

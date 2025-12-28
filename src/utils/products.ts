@@ -5,6 +5,8 @@ export interface ExtendedProduct extends Product {
   salePercentage?: number;
   isNew?: boolean;
   enabled?: boolean;
+  forHer?: boolean;
+  forHim?: boolean;
 }
 
 /**
@@ -16,17 +18,29 @@ export const getProducts = (includeDisabled: boolean = false): ExtendedProduct[]
     const stored = localStorage.getItem("admin-products");
     if (stored) {
       const products = JSON.parse(stored) as ExtendedProduct[];
+      // Ensure all products have forHer/forHim properties with defaults
+      const normalizedProducts = products.map(p => ({
+        ...p,
+        forHer: p.forHer ?? false,
+        forHim: p.forHim ?? false,
+      }));
       if (includeDisabled) {
-        return products;
+        return normalizedProducts;
       }
-      return products.filter(p => p.enabled !== false);
+      return normalizedProducts.filter(p => p.enabled !== false);
     }
   } catch (error) {
     console.error("Failed to load products from localStorage", error);
   }
   
   // Fallback to default products
-  return defaultProducts.map(p => ({ ...p, enabled: true, isNew: false }));
+  return defaultProducts.map(p => ({ 
+    ...p, 
+    enabled: true, 
+    isNew: false,
+    forHer: p.forHer ?? false,
+    forHim: p.forHim ?? false,
+  }));
 };
 
 /**

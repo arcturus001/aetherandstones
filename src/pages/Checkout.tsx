@@ -55,7 +55,7 @@ const Checkout = () => {
         return { ...item, product };
       })
     );
-  }, []);
+  }, [products]);
 
   const subtotal = getCartTotal(cartItems, products);
   const shippingThreshold = 500;
@@ -70,7 +70,7 @@ const Checkout = () => {
         return { ...item, product };
       })
     );
-  }, []);
+  }, [products]);
 
   useEffect(() => {
     if (isFreeShippingEligible) {

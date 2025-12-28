@@ -75,9 +75,23 @@ const Admin = () => {
   const [products, setProducts] = useState<ExtendedProduct[]>(() => {
     const stored = localStorage.getItem("admin-products");
     if (stored) {
-      return JSON.parse(stored);
+      const parsed = JSON.parse(stored);
+      // Ensure all products have forHer/forHim properties
+      return parsed.map((p: ExtendedProduct) => ({
+        ...p,
+        enabled: p.enabled ?? true,
+        isNew: p.isNew ?? false,
+        forHer: p.forHer ?? false,
+        forHim: p.forHim ?? false,
+      }));
     }
-    return initialProducts.map(p => ({ ...p, enabled: true, isNew: false }));
+    return initialProducts.map(p => ({ 
+      ...p, 
+      enabled: true, 
+      isNew: false,
+      forHer: p.forHer ?? false,
+      forHim: p.forHim ?? false,
+    }));
   });
   const [editingProduct, setEditingProduct] = useState<ExtendedProduct | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -97,10 +111,14 @@ const Admin = () => {
     image: "",
     hoverImage: "",
     additionalImages: [],
+    forHer: false,
+    forHim: false,
   });
 
   useEffect(() => {
     localStorage.setItem("admin-products", JSON.stringify(products));
+    // Dispatch custom event to notify shop page of updates
+    window.dispatchEvent(new Event('admin-products-updated'));
   }, [products]);
 
   // Initialize orders
@@ -173,12 +191,22 @@ const Admin = () => {
     }
 
     if (editingProduct) {
-      // Update existing product
+      // Update existing product - ensure forHer/forHim are explicitly set AFTER spread
+      const { forHer, forHim, ...restFormData } = formData;
+      const updatedProduct: ExtendedProduct = {
+        ...editingProduct,
+        ...restFormData,
+        id: editingProduct.id,
+        name: formData.name || editingProduct.name,
+        price: formData.price ?? editingProduct.price,
+        stone: formData.stone || editingProduct.stone,
+        forHer: forHer === true, // Explicitly set boolean AFTER spread
+        forHim: forHim === true, // Explicitly set boolean AFTER spread
+      };
+      
       setProducts(prev =>
         prev.map(p =>
-          p.id === editingProduct.id
-            ? { ...p, ...formData, id: editingProduct.id }
-            : p
+          p.id === editingProduct.id ? updatedProduct : p
         )
       );
       setEditingProduct(null);
@@ -201,6 +229,8 @@ const Admin = () => {
         salePercentage: formData.salePercentage,
         isNew: formData.isNew || false,
         enabled: formData.enabled ?? true,
+        forHer: formData.forHer === true, // Explicitly set boolean
+        forHim: formData.forHim === true, // Explicitly set boolean
       };
       setProducts(prev => [...prev, newProduct]);
       setShowAddForm(false);
@@ -223,6 +253,8 @@ const Admin = () => {
       image: "",
       hoverImage: "",
       additionalImages: [],
+      forHer: false,
+      forHim: false,
     });
   };
 
@@ -244,6 +276,8 @@ const Admin = () => {
       salePercentage: product.salePercentage,
       isNew: product.isNew || false,
       enabled: product.enabled ?? true,
+      forHer: product.forHer || false,
+      forHim: product.forHim || false,
     });
     setShowAddForm(true);
   };
@@ -281,6 +315,8 @@ const Admin = () => {
       image: "",
       hoverImage: "",
       additionalImages: [],
+      forHer: false,
+      forHim: false,
     });
   };
 
@@ -930,6 +966,22 @@ const Admin = () => {
                     />
                     <Text>Enabled</Text>
                   </label>
+                  <label style={style({ display: "flex", alignItems: "center", gap: 8 })}>
+                    <input
+                      type="checkbox"
+                      checked={formData.forHer || false}
+                      onChange={(e) => handleInputChange("forHer", e.target.checked)}
+                    />
+                    <Text>For Her</Text>
+                  </label>
+                  <label style={style({ display: "flex", alignItems: "center", gap: 8 })}>
+                    <input
+                      type="checkbox"
+                      checked={formData.forHim || false}
+                      onChange={(e) => handleInputChange("forHim", e.target.checked)}
+                    />
+                    <Text>For Him</Text>
+                  </label>
                 </div>
 
                 <div style={style({ display: "flex", gap: 12, marginTop: 8 })}>
@@ -992,6 +1044,8 @@ const Admin = () => {
                     {!product.enabled && <Badge variant="negative">Disabled</Badge>}
                     {!product.inStock && <Badge variant="negative">Out of Stock</Badge>}
                     {product.featured && <Badge variant="accent">Featured</Badge>}
+                    {product.forHer && <Badge variant="informative">For Her</Badge>}
+                    {product.forHim && <Badge variant="informative">For Him</Badge>}
                   </div>
                   <Text styles={style({ color: "[rgba(255, 255, 255, 0.7)]" })}>
                     {product.stone} • ${product.price}

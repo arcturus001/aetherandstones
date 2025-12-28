@@ -31,3 +31,6 @@ export type { DisclosureProps, DisclosureHeaderProps, DisclosureTitleProps, Disc
 export { Accordion, AccordionItem } from './Accordion';
 export type { AccordionProps, AccordionItemProps } from './Accordion';
 
+export { SegmentedControl } from './SegmentedControl';
+export type { SegmentedControlProps } from './SegmentedControl';
+

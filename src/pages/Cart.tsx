@@ -35,7 +35,7 @@ const Cart = () => {
         return { ...item, product };
       })
     );
-  }, []);
+  }, [products]);
 
   const handleRemove = (productId: string) => {
     removeFromCart(productId);

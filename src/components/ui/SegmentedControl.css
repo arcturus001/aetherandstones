@@ -1,0 +1,42 @@
+.ui-segmented-control {
+  display: inline-flex;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid #2E2E2E;
+  border-radius: 8px;
+  padding: 4px;
+  gap: 0;
+}
+
+.ui-segmented-control-item {
+  padding: 12px 24px;
+  border: none;
+  background-color: transparent;
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 400;
+  transition: all 0.2s ease;
+  outline: none;
+  position: relative;
+  white-space: nowrap;
+}
+
+.ui-segmented-control-item:not(:last-child) {
+  border-right: 1px solid #2E2E2E;
+}
+
+.ui-segmented-control-item:hover:not(.ui-segmented-control-item--selected) {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.ui-segmented-control-item--selected {
+  background-color: #CB6D47;
+  color: #050505;
+  font-weight: 600;
+}
+
+.ui-segmented-control-item:focus-visible {
+  outline: 2px solid #CB6D47;
+  outline-offset: 2px;
+}
+
