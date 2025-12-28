@@ -917,6 +917,14 @@ button:hover {
   }
 }
 
+/* Hero title for viewports larger than 500px */
+@media (min-width: 501px) {
+  .hero-title {
+    font-size: 80px !important;
+    line-height: 1.2 !important;
+  }
+}
+
 /* Hero title font size for very small viewports (375px and below) */
 @media (max-width: 375px) {
   .hero-title {
