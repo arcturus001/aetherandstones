@@ -381,6 +381,40 @@ export const Header = () => {
             )}
           </div>
           <Link 
+            to="/shop?category=forHer" 
+            style={style({ 
+              textDecoration: 'none', 
+              color: 'white',
+              display: 'inline-block'
+            })}
+          >
+            <ActionButton 
+              isQuiet 
+              styles={style({ 
+                color: location.search.includes("category=forHer") ? primarycolor : 'white' 
+              })}
+            >
+              For Her
+            </ActionButton>
+          </Link>
+          <Link 
+            to="/shop?category=forHim" 
+            style={style({ 
+              textDecoration: 'none', 
+              color: 'white',
+              display: 'inline-block'
+            })}
+          >
+            <ActionButton 
+              isQuiet 
+              styles={style({ 
+                color: location.search.includes("category=forHim") ? primarycolor : 'white' 
+              })}
+            >
+              For Him
+            </ActionButton>
+          </Link>
+          <Link 
             to="/energy" 
             style={style({ 
               textDecoration: 'none', 

@@ -115,7 +115,7 @@ const Index = () => {
           ref={heroSectionRef}
           style={{
             position: "relative",
-            minHeight: "calc(100vh - 80px)",
+            height: "100vh",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -127,15 +127,24 @@ const Index = () => {
             style={{
               position: "absolute",
               inset: 0,
+              top: 0,
+              bottom: 0,
+              left: 0,
+              right: 0,
               backgroundImage: `url(${heroImage})`,
               backgroundSize: "cover",
               backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
             }}
           />
           <div
             style={{
               position: "absolute",
               inset: 0,
+              top: 0,
+              bottom: 0,
+              left: 0,
+              right: 0,
               backgroundColor: "black",
               opacity: 0.7,
             }}
