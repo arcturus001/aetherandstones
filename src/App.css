@@ -857,6 +857,21 @@ button:hover {
   .cart-button-wrapper {
     margin-left: -80px !important;
   }
+  
+  /* Hero title and subtitle for mobile viewports 375px-500px */
+  .hero-title {
+    font-size: 32px !important;
+    line-height: 1.2 !important;
+  }
+  
+  .page-hero-subtitle {
+    font-size: 18px !important;
+  }
+  
+  /* Ensure handcrafted section starts after trust bar on mobile */
+  .handcrafted-section {
+    margin-top: 0 !important;
+  }
 }
 
 /* Hero title font size for very small viewports (375px and below) */

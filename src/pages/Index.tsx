@@ -24,9 +24,20 @@ const Index = () => {
         const viewportHeight = window.innerHeight;
         const trustBarTop = viewportHeight - 69;
         trustBarRef.current.style.top = `${trustBarTop}px`;
-        // Position scroll effect section right after trust bar ends
-        scrollSectionRef.current.style.top = `${viewportHeight}px`;
-        scrollSectionRef.current.style.marginTop = "0px";
+        
+        // Wait for trust bar to render, then position handcrafted section after it
+        setTimeout(() => {
+          if (trustBarRef.current && scrollSectionRef.current) {
+            // Get trust bar's actual position and height
+            const trustBarRect = trustBarRef.current.getBoundingClientRect();
+            const trustBarHeight = trustBarRef.current.offsetHeight;
+            const trustBarBottom = trustBarRect.top + trustBarHeight;
+            
+            // Position scroll effect section right after trust bar ends
+            scrollSectionRef.current.style.top = `${trustBarBottom}px`;
+            scrollSectionRef.current.style.marginTop = "0px";
+          }
+        }, 50);
         
         // Wait for DOM to render, then measure actual scroll section height
         setTimeout(() => {
