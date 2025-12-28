@@ -181,7 +181,7 @@ const Index = () => {
             >
               {homeCopy.heroDescription}
             </Text>
-            <div style={{
+            <div className="hero-buttons-container" style={{
               display: "flex",
               gap: 16,
               justifyContent: "center",

@@ -865,7 +865,7 @@ button:hover {
   }
   
   .page-hero-subtitle {
-    font-size: 18px !important;
+    font-size: 16px !important;
   }
   
   /* Ensure handcrafted section starts after trust bar on mobile */
@@ -876,6 +876,18 @@ button:hover {
   /* Center align PageHero headings on mobile */
   .ui-heading--h1 {
     text-align: center !important;
+  }
+  
+  /* Keep hero buttons on one line on mobile */
+  .hero-buttons-container {
+    flex-wrap: nowrap !important;
+    gap: 12px !important;
+  }
+  
+  .hero-buttons-container a > div {
+    padding: 10px 16px !important;
+    font-size: 16px !important;
+    white-space: nowrap !important;
   }
 }
 
