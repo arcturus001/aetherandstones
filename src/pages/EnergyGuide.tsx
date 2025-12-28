@@ -1,6 +1,7 @@
 import { style } from "../utils/styles";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
+import { SEO } from "../components/SEO";
 import { getProducts } from "../utils/products";
 import { getBadgeColor } from "../utils/badgeColors";
 import { BadgeTag } from "../components/BadgeTag";
@@ -20,6 +21,10 @@ const EnergyGuide = () => {
         flexDirection: "column",
       })}
     >
+      <SEO 
+        title="Energy Guide - Aether & Stones"
+        description="Discover the cultural properties and traditions behind each stone. Learn about the energy benefits and metaphysical meanings of our handcrafted bracelets."
+      />
       <Header />
 
       <main

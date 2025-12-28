@@ -5,6 +5,8 @@ import { style } from "../utils/styles";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import { ShippingToast } from "../components/ShippingToast";
+import { SEO } from "../components/SEO";
+import { ProductStructuredData } from "../components/ProductStructuredData";
 import { getProductById, getProducts } from "../utils/products";
 import { getBadgeColor } from "../utils/badgeColors";
 import { addToCart } from "../utils/cart";
@@ -115,6 +117,45 @@ const ProductDetail = () => {
 
   return (
     <div style={{ backgroundColor: "#050505", color: "white", minHeight: "100vh" }}>
+      {product ? (
+        <>
+          <SEO 
+            title={`${product.name} - Aether & Stones`}
+            description={product.description || `Handcrafted ${product.stone} bracelet. ${product.properties?.join(', ')}. Shop now at Aether & Stones.`}
+            image={product.image}
+            type="product"
+            structuredData={{
+              "@context": "https://schema.org",
+              "@type": "Product",
+              "name": product.name,
+              "description": product.description,
+              "image": product.image,
+              "brand": {
+                "@type": "Brand",
+                "name": "Aether & Stones"
+              },
+              "offers": {
+                "@type": "Offer",
+                "url": `https://www.aetherandstones.com/product/${product.id}`,
+                "priceCurrency": "USD",
+                "price": product.price.toString(),
+                "availability": product.inStock 
+                  ? "https://schema.org/InStock" 
+                  : "https://schema.org/OutOfStock",
+                "seller": {
+                  "@type": "Store",
+                  "name": "Aether & Stones"
+                }
+              },
+              ...(product.stone && {
+                "category": product.stone,
+                "material": product.stone
+              })
+            }}
+          />
+          <ProductStructuredData product={product} />
+        </>
+      ) : null}
       <Header />
 
       {!product ? (

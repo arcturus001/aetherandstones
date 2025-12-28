@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /admin/*
+Disallow: /checkout
+Disallow: /cart
+Disallow: /account
+Disallow: /login
+Disallow: /order-success
+Disallow: /framework
+
+Sitemap: https://www.aetherandstones.com/sitemap.xml
+

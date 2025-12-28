@@ -2,6 +2,7 @@ import { Text, TextField, TextArea, Button, Heading } from "../components/ui";
 import { style } from "../utils/styles";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
+import { SEO } from "../components/SEO";
 import { PageHero } from "../components/PageHero";
 import { useState } from "react";
 
@@ -33,6 +34,10 @@ const Contact = () => {
         flexDirection: "column",
       })}
     >
+      <SEO 
+        title="Contact Us - Aether & Stones"
+        description="Get in touch with Aether & Stones. We're here to help with questions about our products, orders, or anything else."
+      />
       <Header />
       <main
         style={style({

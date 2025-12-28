@@ -3,6 +3,7 @@ import { style } from "../utils/styles";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import { ProductCard } from "../components/ProductCard";
+import { SEO } from "../components/SEO";
 import { homeCopy } from "../data/copy";
 import { getProducts } from "../utils/products";
 import { heroImage, ruleImage, hoverGreenImage, obsidianImage, brownImage, purpleImage } from "../assets";
@@ -97,6 +98,11 @@ const Index = () => {
       display: "flex",
       flexDirection: "column",
     }}>
+      <SEO 
+        title="Aether & Stones — We don't sell luxury. We sell energy."
+        description="Hand-finished stone bracelets crafted to amplify how you feel. Each piece is designed to channel the energy you need most. Shop our collection of handcrafted spiritual jewelry."
+        image={`https://www.aetherandstones.com${heroImage}`}
+      />
       <Header />
 
       <main ref={mainRef} style={{ flex: 1, position: "relative", minHeight: "calc(100vh - 80px)", overflowX: "hidden", maxWidth: "100vw", boxSizing: "border-box" }}>

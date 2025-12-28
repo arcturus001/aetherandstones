@@ -2,6 +2,7 @@ import { Accordion, AccordionItem, Text } from "../components/ui";
 import { style } from "../utils/styles";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
+import { SEO } from "../components/SEO";
 import { PageHero } from "../components/PageHero";
 
 const faqs = [
@@ -63,6 +64,19 @@ const faqs = [
 ];
 
 const FAQ = () => {
+  const faqStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": faqs.map(faq => ({
+      "@type": "Question",
+      "name": faq.question,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": faq.answer
+      }
+    }))
+  };
+
   return (
     <div
       style={style({
@@ -73,6 +87,11 @@ const FAQ = () => {
         flexDirection: "column",
       })}
     >
+      <SEO 
+        title="FAQ - Aether & Stones"
+        description="Frequently asked questions about Aether & Stones bracelets, shipping, returns, care instructions, and more."
+        structuredData={faqStructuredData}
+      />
       <Header />
       <main
         style={style({

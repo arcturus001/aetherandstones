@@ -30,6 +30,7 @@ import Login from "./pages/Login";
 import Account from "./pages/Account";
 import Admin from "./pages/Admin";
 import ProductPreview from "./pages/ProductPreview";
+import Sitemap from "./pages/Sitemap";
 import { style } from "./utils/styles";
 
 function ScrollToTop() {
@@ -92,6 +93,7 @@ function App() {
           <Route path="/admin/preview/:productId" element={<ProductPreview />} />
           <Route path="/framework" element={<ComponentsReadme />} />
           <Route path="/product/:productId" element={<ProductDetail />} />
+          <Route path="/sitemap.xml" element={<Sitemap />} />
         </Routes>
       </div>
     </BrowserRouter>

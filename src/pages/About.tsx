@@ -2,6 +2,7 @@ import { Text } from "../components/ui";
 import { style } from "../utils/styles";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
+import { SEO } from "../components/SEO";
 import { PageHero } from "../components/PageHero";
 import aboutImage from "../Images/about.png";
 
@@ -61,6 +62,11 @@ const About = () => (
       flexDirection: "column",
     })}
   >
+    <SEO 
+      title="About Us - Aether & Stones"
+      description="Aether & Stone was born in Armenia — a land of mountains, ancient paths, and stones shaped by time. Learn about our philosophy and connection to Armenian nature."
+      image="https://www.aetherandstones.com/about.png"
+    />
     <Header />
     <main
       style={style({

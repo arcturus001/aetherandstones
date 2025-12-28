@@ -1,6 +1,7 @@
 import { style } from "../utils/styles";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
+import { SEO } from "../components/SEO";
 import { getProducts } from "../utils/products";
 import { ProductCard } from "../components/ProductCard";
 import { PageHero } from "../components/PageHero";
@@ -17,6 +18,10 @@ const Shop = () => {
         display: "flex",
         flexDirection: "column",
       })}>
+      <SEO 
+        title="Shop Collection - Aether & Stones"
+        description="Browse our complete collection of hand-finished stone bracelets. Each piece is carefully crafted to channel the energy you need most."
+      />
       <Header />
 
       <main style={style({
