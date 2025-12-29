@@ -439,8 +439,31 @@ const Index = () => {
                 width: "500px",
                 height: "500px",
                 minHeight: "500px",
+                overflow: "visible",
               }}
             >
+              {/* Looping text behind the background */}
+              <div
+                className="handcrafted-looping-text"
+                style={{
+                  position: "fixed",
+                  top: "50%",
+                  left: 0,
+                  width: "max-content",
+                  zIndex: -3,
+                  whiteSpace: "nowrap",
+                  fontSize: "40px",
+                  color: "rgba(190, 151, 75, 0.3)",
+                  fontFamily: "var(--s2-font-family-sans, adobe-clean-spectrum-vf), adobe-clean-variable, adobe-clean, ui-sans-serif, system-ui, sans-serif",
+                  fontWeight: "300",
+                  letterSpacing: "2px",
+                  pointerEvents: "none",
+                }}
+              >
+                <span className="looping-text-content">
+                  Where unseen energy meets ancient stone, each piece carries a whisper of harmony. Where unseen energy meets ancient stone, each piece carries a whisper of harmony. Where unseen energy meets ancient stone, each piece carries a whisper of harmony. Where unseen energy meets ancient stone, each piece carries a whisper of harmony. Where unseen energy meets ancient stone, each piece carries a whisper of harmony. Where unseen energy meets ancient stone, each piece carries a whisper of harmony.
+                </span>
+              </div>
               <div
                 className="handcrafted-image-background"
                 style={{

@@ -864,6 +864,26 @@ button:hover {
   }
 }
 
+/* Looping text animation for handcrafted section */
+@keyframes scrollText {
+  0% {
+    transform: translateX(0) translateY(-50%);
+  }
+  100% {
+    transform: translateX(-50%) translateY(-50%);
+  }
+}
+
+.handcrafted-looping-text {
+  animation: scrollText 120s linear infinite;
+  will-change: transform;
+  left: 0 !important;
+}
+
+.handcrafted-looping-text .looping-text-content {
+  display: inline-block;
+}
+
 @media (min-width: 375px) and (max-width: 500px) {
   .cart-button-wrapper {
     margin-left: -80px !important;
