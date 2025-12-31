@@ -9,7 +9,7 @@ import { homeCopy } from "../data/copy";
 import { getProducts } from "../utils/products";
 import { heroImage, heroVideoSrc, ruleImage, hoverGreenImage, obsidianImage, brownImage, purpleImage } from "../assets";
 import { primarycolor } from "../styles/primaryColor";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
 const Index = () => {
@@ -21,6 +21,8 @@ const Index = () => {
   const energyGuideRef = useRef<HTMLElement>(null);
   const mainRef = useRef<HTMLElement>(null);
   const heroSectionRef = useRef<HTMLElement>(null);
+  const [isVideoReady, setIsVideoReady] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     const positionSections = () => {
@@ -123,12 +125,46 @@ const Index = () => {
             paddingTop: "80px", // Account for fixed header height
           }}
         >
+          {/* Placeholder image - shows until video is ready */}
+          {heroVideoSrc && !isVideoReady && (
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                top: 0,
+                bottom: 0,
+                left: 0,
+                right: 0,
+                backgroundImage: `url(${heroImage})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                backgroundRepeat: "no-repeat",
+                zIndex: 1,
+                transition: "opacity 0.5s ease-out",
+              }}
+            />
+          )}
+          
+          {/* Video element */}
           {heroVideoSrc ? (
             <video
+              ref={videoRef}
               autoPlay
               loop
               muted
               playsInline
+              onCanPlay={() => {
+                setIsVideoReady(true);
+                if (videoRef.current) {
+                  videoRef.current.play().catch(() => {
+                    // Autoplay failed, but video is ready
+                    setIsVideoReady(true);
+                  });
+                }
+              }}
+              onLoadedData={() => {
+                setIsVideoReady(true);
+              }}
               style={{
                 position: "absolute",
                 inset: 0,
@@ -140,7 +176,9 @@ const Index = () => {
                 height: "100%",
                 objectFit: "cover",
                 objectPosition: "center",
-                zIndex: 0,
+                zIndex: isVideoReady ? 0 : -1,
+                opacity: isVideoReady ? 1 : 0,
+                transition: "opacity 0.5s ease-in",
               }}
             >
               <source src={heroVideoSrc} type="video/mp4" />
