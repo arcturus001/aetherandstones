@@ -7,7 +7,7 @@ import { SEO } from "../components/SEO";
 import { ArrowDownBounce } from "../components/ArrowDownBounce";
 import { homeCopy } from "../data/copy";
 import { getProducts } from "../utils/products";
-import { heroImage, ruleImage, hoverGreenImage, obsidianImage, brownImage, purpleImage } from "../assets";
+import { heroImage, heroVideoSrc, ruleImage, hoverGreenImage, obsidianImage, brownImage, purpleImage } from "../assets";
 import { primarycolor } from "../styles/primaryColor";
 import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
@@ -123,20 +123,44 @@ const Index = () => {
             paddingTop: "80px", // Account for fixed header height
           }}
         >
-          <div
-            style={{
-              position: "absolute",
-              inset: 0,
-              top: 0,
-              bottom: 0,
-              left: 0,
-              right: 0,
-              backgroundImage: `url(${heroImage})`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              backgroundRepeat: "no-repeat",
-            }}
-          />
+          {heroVideoSrc ? (
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              style={{
+                position: "absolute",
+                inset: 0,
+                top: 0,
+                bottom: 0,
+                left: 0,
+                right: 0,
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                objectPosition: "center",
+                zIndex: 0,
+              }}
+            >
+              <source src={heroVideoSrc} type="video/mp4" />
+            </video>
+          ) : (
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                top: 0,
+                bottom: 0,
+                left: 0,
+                right: 0,
+                backgroundImage: `url(${heroImage})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                backgroundRepeat: "no-repeat",
+              }}
+            />
+          )}
           <div
             style={{
               position: "absolute",

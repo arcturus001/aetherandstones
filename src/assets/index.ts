@@ -10,13 +10,12 @@ import hoverGreenImg from "../Images/hover green.png";
 import obsidianImg from "../Images/obsidian.png";
 import brownImg from "../Images/brown.png";
 import purpleImg from "../Images/purple.png";
-// Import images - they should be named "for her.jpg" and "for him.jpg" in src/Images/
-// Uncomment these lines once the images are added:
-// import forHerImg from "../Images/for her.jpg";
-// import forHimImg from "../Images/for him.jpg";
+// Import video
+import heroVideoFile from "../Images/video.mp4";
 
 // Hero images
 export const heroImage = heroImg;
+export const heroVideoSrc: string = heroVideoFile;
 
 // Product images
 export const productImages = {
