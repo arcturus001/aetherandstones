@@ -7,9 +7,9 @@ import { SEO } from "../components/SEO";
 import { ArrowDownBounce } from "../components/ArrowDownBounce";
 import { homeCopy } from "../data/copy";
 import { getProducts } from "../utils/products";
-import { heroImage, heroVideoSrc, ruleImage, hoverGreenImage, obsidianImage, brownImage, purpleImage } from "../assets";
+import { heroVideoSrc, heroPlaceholderSrc, ruleImage, hoverGreenImage, obsidianImage, brownImage, purpleImage } from "../assets";
 import { primarycolor } from "../styles/primaryColor";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 
 const Index = () => {
@@ -21,7 +21,6 @@ const Index = () => {
   const energyGuideRef = useRef<HTMLElement>(null);
   const mainRef = useRef<HTMLElement>(null);
   const heroSectionRef = useRef<HTMLElement>(null);
-  const [isVideoReady, setIsVideoReady] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -107,7 +106,7 @@ const Index = () => {
       <SEO 
         title="Aether & Stones — We don't sell luxury. We sell energy."
         description="Hand-finished stone bracelets crafted to amplify how you feel. Each piece is designed to channel the energy you need most. Shop our collection of handcrafted spiritual jewelry."
-        image={`https://www.aetherandstones.com${heroImage}`}
+        image="https://www.aetherandstones.com/hero-placeholder.jpg"
       />
       <Header />
 
@@ -125,27 +124,7 @@ const Index = () => {
             paddingTop: "80px", // Account for fixed header height
           }}
         >
-          {/* Placeholder image - shows until video is ready */}
-          {heroVideoSrc && !isVideoReady && (
-            <div
-              style={{
-                position: "absolute",
-                inset: 0,
-                top: 0,
-                bottom: 0,
-                left: 0,
-                right: 0,
-                backgroundImage: `url(${heroImage})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                backgroundRepeat: "no-repeat",
-                zIndex: 1,
-                transition: "opacity 0.5s ease-out",
-              }}
-            />
-          )}
-          
-          {/* Video element */}
+          {/* Video element with poster placeholder */}
           {heroVideoSrc ? (
             <video
               ref={videoRef}
@@ -153,18 +132,7 @@ const Index = () => {
               loop
               muted
               playsInline
-              onCanPlay={() => {
-                setIsVideoReady(true);
-                if (videoRef.current) {
-                  videoRef.current.play().catch(() => {
-                    // Autoplay failed, but video is ready
-                    setIsVideoReady(true);
-                  });
-                }
-              }}
-              onLoadedData={() => {
-                setIsVideoReady(true);
-              }}
+              poster={heroPlaceholderSrc || undefined}
               style={{
                 position: "absolute",
                 inset: 0,
@@ -176,29 +144,12 @@ const Index = () => {
                 height: "100%",
                 objectFit: "cover",
                 objectPosition: "center",
-                zIndex: isVideoReady ? 0 : -1,
-                opacity: isVideoReady ? 1 : 0,
-                transition: "opacity 0.5s ease-in",
+                zIndex: 0,
               }}
             >
               <source src={heroVideoSrc} type="video/mp4" />
             </video>
-          ) : (
-            <div
-              style={{
-                position: "absolute",
-                inset: 0,
-                top: 0,
-                bottom: 0,
-                left: 0,
-                right: 0,
-                backgroundImage: `url(${heroImage})`,
-                backgroundSize: "cover",
-                backgroundPosition: "center",
-                backgroundRepeat: "no-repeat",
-              }}
-            />
-          )}
+          ) : null}
           <div
             style={{
               position: "absolute",

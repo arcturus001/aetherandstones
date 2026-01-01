@@ -1,5 +1,5 @@
 // Local image imports
-import heroImg from "../Images/hero.jpeg";
+// Hero image removed - using video with placeholder
 import product1Img from "../Images/product 1.jpeg";
 import product2Img from "../Images/product 2.jpeg";
 import product3Img from "../Images/product 3.jpeg";
@@ -13,9 +13,10 @@ import purpleImg from "../Images/purple.png";
 // Import video
 import heroVideoFile from "../Images/video.mp4";
 
-// Hero images
-export const heroImage = heroImg;
+// Hero video
 export const heroVideoSrc: string = heroVideoFile;
+// Hero placeholder - uncomment and set once placeholder image is added:
+export const heroPlaceholderSrc: string = ""; // Set to: heroPlaceholderImg
 
 // Product images
 export const productImages = {
