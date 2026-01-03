@@ -2,11 +2,11 @@
  * Vercel Serverless Function for managing orders
  * GET /api/orders - Get all orders or orders for a specific user
  * POST /api/orders - Create a new order
+ * PUT /api/orders - Update an order
  */
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { readFile, writeFile } from 'fs/promises';
-import { join } from 'path';
+import { query, initializeDatabase } from './db';
 
 interface OrderItem {
   productId: string;
@@ -44,29 +44,73 @@ interface RecentOrder {
   address?: string;
 }
 
-const DATA_DIR = '/tmp'; // Vercel serverless functions use /tmp for writable storage
-const ORDERS_FILE = join(DATA_DIR, 'orders.json');
-
-async function getOrders(): Promise<RecentOrder[]> {
-  try {
-    const data = await readFile(ORDERS_FILE, 'utf-8');
-    return JSON.parse(data) as RecentOrder[];
-  } catch (error) {
-    // File doesn't exist or is empty, return empty array
-    if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
-      return [];
+// Initialize database on first import
+let dbInitialized = false;
+async function ensureDatabaseInitialized() {
+  if (!dbInitialized) {
+    try {
+      await initializeDatabase();
+      dbInitialized = true;
+    } catch (error) {
+      console.error('Failed to initialize database:', error);
     }
-    console.error('Error reading orders file:', error);
-    return [];
   }
 }
 
-async function saveOrders(orders: RecentOrder[]): Promise<void> {
+async function getOrders(userId?: string): Promise<RecentOrder[]> {
+  await ensureDatabaseInitialized();
+  
   try {
-    await writeFile(ORDERS_FILE, JSON.stringify(orders, null, 2), 'utf-8');
+    let result;
+    if (userId) {
+      result = await query<{
+        id: string;
+        user_id: string | null;
+        customer_name: string;
+        customer_email: string;
+        items: any;
+        shipping_address: any;
+        subtotal: number;
+        shipping_cost: number;
+        total: number;
+        shipping_method: string;
+        date: Date;
+        status: string;
+      }>('SELECT * FROM orders WHERE user_id = $1 ORDER BY date DESC', [userId]);
+    } else {
+      result = await query<{
+        id: string;
+        user_id: string | null;
+        customer_name: string;
+        customer_email: string;
+        items: any;
+        shipping_address: any;
+        subtotal: number;
+        shipping_cost: number;
+        total: number;
+        shipping_method: string;
+        date: Date;
+        status: string;
+      }>('SELECT * FROM orders ORDER BY date DESC');
+    }
+
+    return result.rows.map(row => ({
+      id: row.id,
+      userId: row.user_id || undefined,
+      customerName: row.customer_name,
+      customerEmail: row.customer_email,
+      items: row.items,
+      shippingAddress: row.shipping_address,
+      subtotal: parseFloat(row.subtotal.toString()),
+      shippingCost: parseFloat(row.shipping_cost.toString()),
+      total: parseFloat(row.total.toString()),
+      shippingMethod: row.shipping_method as 'express' | 'standard',
+      date: row.date.toISOString(),
+      status: row.status as 'gathering' | 'shipped' | 'delivered',
+    }));
   } catch (error) {
-    console.error('Error writing orders file:', error);
-    throw error;
+    console.error('Error fetching orders from database:', error);
+    return [];
   }
 }
 
@@ -87,19 +131,13 @@ export default async function handler(
     if (req.method === 'GET') {
       // Get orders
       const { userId } = req.query;
-      const orders = await getOrders();
-
-      if (userId && typeof userId === 'string') {
-        // Filter orders for specific user
-        const userOrders = orders.filter(order => order.userId === userId);
-        return res.status(200).json({ orders: userOrders });
-      }
-
-      // Return all orders
+      const orders = await getOrders(userId as string | undefined);
       return res.status(200).json({ orders });
     }
 
     if (req.method === 'POST') {
+      await ensureDatabaseInitialized();
+      
       // Create new order
       const orderData = req.body as Omit<RecentOrder, 'id' | 'date'>;
 
@@ -112,26 +150,53 @@ export default async function handler(
 
       // Generate order ID
       const orderId = `order-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      const orderDate = new Date();
       
-      const newOrder: RecentOrder = {
-        ...orderData,
-        id: orderId,
-        date: new Date().toISOString(),
-        status: orderData.status || 'gathering',
-      };
+      try {
+        await query(
+          `INSERT INTO orders (id, user_id, customer_name, customer_email, items, shipping_address, 
+           subtotal, shipping_cost, total, shipping_method, date, status)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
+          [
+            orderId,
+            orderData.userId || null,
+            orderData.customerName,
+            orderData.customerEmail,
+            JSON.stringify(orderData.items),
+            JSON.stringify(orderData.shippingAddress),
+            orderData.subtotal,
+            orderData.shippingCost,
+            orderData.total,
+            orderData.shippingMethod,
+            orderDate,
+            orderData.status || 'gathering',
+          ]
+        );
 
-      const orders = await getOrders();
-      orders.push(newOrder);
-      await saveOrders(orders);
+        const newOrder: RecentOrder = {
+          ...orderData,
+          id: orderId,
+          date: orderDate.toISOString(),
+          status: orderData.status || 'gathering',
+        };
 
-      console.log('✅ New order created:', orderId);
-      return res.status(201).json({ 
-        success: true, 
-        order: newOrder 
-      });
+        console.log('✅ New order created:', orderId);
+        return res.status(201).json({ 
+          success: true, 
+          order: newOrder 
+        });
+      } catch (error) {
+        console.error('Error creating order:', error);
+        return res.status(500).json({
+          error: 'Failed to create order',
+          message: error instanceof Error ? error.message : 'Unknown error',
+        });
+      }
     }
 
     if (req.method === 'PUT') {
+      await ensureDatabaseInitialized();
+      
       // Update existing order
       const { orderId, ...updateData } = req.body as { orderId: string } & Partial<RecentOrder>;
 
@@ -139,28 +204,89 @@ export default async function handler(
         return res.status(400).json({ error: 'orderId is required' });
       }
 
-      const orders = await getOrders();
-      const orderIndex = orders.findIndex(order => order.id === orderId);
+      try {
+        // Build update query dynamically based on provided fields
+        const updates: string[] = [];
+        const values: any[] = [];
+        let paramIndex = 1;
 
-      if (orderIndex === -1) {
-        return res.status(404).json({ error: 'Order not found' });
+        if (updateData.status !== undefined) {
+          updates.push(`status = $${paramIndex++}`);
+          values.push(updateData.status);
+        }
+        if (updateData.userId !== undefined) {
+          updates.push(`user_id = $${paramIndex++}`);
+          values.push(updateData.userId || null);
+        }
+        if (updateData.items !== undefined) {
+          updates.push(`items = $${paramIndex++}`);
+          values.push(JSON.stringify(updateData.items));
+        }
+        if (updateData.shippingAddress !== undefined) {
+          updates.push(`shipping_address = $${paramIndex++}`);
+          values.push(JSON.stringify(updateData.shippingAddress));
+        }
+        if (updateData.subtotal !== undefined) {
+          updates.push(`subtotal = $${paramIndex++}`);
+          values.push(updateData.subtotal);
+        }
+        if (updateData.shippingCost !== undefined) {
+          updates.push(`shipping_cost = $${paramIndex++}`);
+          values.push(updateData.shippingCost);
+        }
+        if (updateData.total !== undefined) {
+          updates.push(`total = $${paramIndex++}`);
+          values.push(updateData.total);
+        }
+        if (updateData.shippingMethod !== undefined) {
+          updates.push(`shipping_method = $${paramIndex++}`);
+          values.push(updateData.shippingMethod);
+        }
+
+        if (updates.length === 0) {
+          return res.status(400).json({ error: 'No fields to update' });
+        }
+
+        updates.push(`updated_at = CURRENT_TIMESTAMP`);
+        values.push(orderId);
+
+        const result = await query(
+          `UPDATE orders SET ${updates.join(', ')} WHERE id = $${paramIndex} RETURNING *`,
+          values
+        );
+
+        if (result.rows.length === 0) {
+          return res.status(404).json({ error: 'Order not found' });
+        }
+
+        const row = result.rows[0];
+        const updatedOrder: RecentOrder = {
+          id: row.id,
+          userId: row.user_id || undefined,
+          customerName: row.customer_name,
+          customerEmail: row.customer_email,
+          items: row.items,
+          shippingAddress: row.shipping_address,
+          subtotal: parseFloat(row.subtotal.toString()),
+          shippingCost: parseFloat(row.shipping_cost.toString()),
+          total: parseFloat(row.total.toString()),
+          shippingMethod: row.shipping_method as 'express' | 'standard',
+          date: row.date.toISOString(),
+          status: row.status as 'gathering' | 'shipped' | 'delivered',
+        };
+
+        console.log('✅ Order updated:', orderId);
+        return res.status(200).json({ 
+          success: true, 
+          order: updatedOrder 
+        });
+      } catch (error) {
+        console.error('Error updating order:', error);
+        return res.status(500).json({
+          error: 'Failed to update order',
+          message: error instanceof Error ? error.message : 'Unknown error',
+        });
       }
-
-      // Update the order
-      const updatedOrder: RecentOrder = {
-        ...orders[orderIndex],
-        ...updateData,
-        id: orderId, // Ensure orderId doesn't change
-      };
-
-      orders[orderIndex] = updatedOrder;
-      await saveOrders(orders);
-
-      console.log('✅ Order updated:', orderId);
-      return res.status(200).json({ 
-        success: true, 
-        order: updatedOrder 
-      });
     }
 
     return res.status(405).json({ error: 'Method not allowed' });

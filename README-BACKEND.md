@@ -82,13 +82,26 @@ The serverless functions will automatically be deployed and available at `/api/*
 
 ## Data Storage
 
-Currently, orders, subscriptions, and inventory are stored in JSON files in `/tmp` directory (Vercel serverless function storage).
+**✅ PostgreSQL Database** - All data is stored in PostgreSQL database for persistent storage.
 
-**Note:** For production, consider migrating to a proper database:
-- Vercel Postgres
-- MongoDB Atlas
-- Supabase
-- PlanetScale
+### Database Setup
+
+1. **Create PostgreSQL database** on Render (or your preferred provider)
+2. **Set `DATABASE_URL` environment variable** with your database connection string
+3. **Tables are created automatically** on first API request
+
+See `RENDER-POSTGRESQL-SETUP.md` for detailed setup instructions.
+
+### Database Tables
+
+- **orders** - All customer orders
+- **inventory** - Product inventory with stock levels
+- **subscriptions** - Email subscription list
+
+All tables include:
+- Automatic timestamps (`created_at`, `updated_at`)
+- Indexes for performance
+- JSONB columns for flexible data storage
 
 ## Frontend Usage
 
