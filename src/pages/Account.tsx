@@ -23,21 +23,27 @@ const Account = () => {
     }
 
     const currentUser = getCurrentUser();
-    if (currentUser) {
-      setUser(currentUser);
-      const userOrders = getUserOrders(currentUser.id);
-      setOrders(userOrders.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
-    }
+    
+    const loadUserOrders = async () => {
+      if (currentUser) {
+        setUser(currentUser);
+        const userOrders = await getUserOrders(currentUser.id);
+        setOrders(userOrders.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+      }
+    };
+
+    loadUserOrders();
 
     // Listen for order updates
-    const handleOrderUpdate = () => {
+    const handleOrderUpdate = async () => {
       if (currentUser) {
-        const userOrders = getUserOrders(currentUser.id);
+        const userOrders = await getUserOrders(currentUser.id);
         setOrders(userOrders.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
       }
     };
 
     window.addEventListener("order-status-updated", handleOrderUpdate);
+    return () => window.removeEventListener("order-status-updated", handleOrderUpdate);
     return () => window.removeEventListener("order-status-updated", handleOrderUpdate);
   }, [navigate]);
 

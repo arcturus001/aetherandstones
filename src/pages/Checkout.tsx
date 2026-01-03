@@ -164,8 +164,8 @@ const Checkout = () => {
         status: "gathering",
       };
 
-      // Save order
-      addOrder(newOrder);
+      // Save order to backend
+      await addOrder(newOrder);
 
       // Send email notification
       console.log("Attempting to send order notification email...");

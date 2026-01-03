@@ -107,7 +107,7 @@ export async function registerUser(
   setCurrentUser(user);
   
   // Link any existing orders to this user
-  const linkedCount = linkOrdersToUser(user.id, emailLower);
+  const linkedCount = await linkOrdersToUser(user.id, emailLower);
   if (linkedCount > 0) {
     console.log(`Linked ${linkedCount} existing order(s) to your account`);
   }
@@ -143,7 +143,7 @@ export async function loginUser(
   setCurrentUser(userData.user);
   
   // Link any existing orders to this user
-  const linkedCount = linkOrdersToUser(userData.user.id, emailLower);
+  const linkedCount = await linkOrdersToUser(userData.user.id, emailLower);
   if (linkedCount > 0) {
     console.log(`Linked ${linkedCount} existing order(s) to your account`);
   }

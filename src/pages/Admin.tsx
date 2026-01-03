@@ -6,8 +6,9 @@ import { style } from "../utils/styles";
 import { products as initialProducts, type Product } from "../data/products";
 import { primarycolor } from "../styles/primaryColor";
 import { verifyCredentials, isAuthenticated, setAuthenticated } from "../utils/auth";
-import { mockSalesData, mockInventory, mockRecentOrders, mockTopProducts, type RecentOrder } from "../utils/mockData";
+import { mockSalesData, mockInventory, mockRecentOrders, mockTopProducts, type RecentOrder, type InventoryItem } from "../utils/mockData";
 import { initializeOrders, updateOrderStatus, getOrders } from "../utils/orders";
+import { getInventory, initializeInventory } from "../utils/inventory";
 
 // Extended Product interface for admin
 interface ExtendedProduct extends Product {
@@ -61,6 +62,7 @@ const Admin = () => {
   const [orders, setOrders] = useState<RecentOrder[]>([]);
   const [orderFilter, setOrderFilter] = useState<"all" | "gathering" | "shipped" | "delivered">("all");
   const [inventoryView, setInventoryView] = useState<"list" | "grid">("list");
+  const [inventory, setInventory] = useState<InventoryItem[]>([]);
 
   // Sync activeTab with URL params
   useEffect(() => {
@@ -123,8 +125,57 @@ const Admin = () => {
 
   // Initialize orders
   useEffect(() => {
-    const initializedOrders = initializeOrders(mockRecentOrders);
-    setOrders(initializedOrders);
+    const loadOrders = async () => {
+      const initializedOrders = await initializeOrders(mockRecentOrders);
+      const apiOrders = await getOrders();
+      // Use API orders if available, otherwise use initialized orders
+      setOrders(apiOrders.length > 0 ? apiOrders : initializedOrders);
+    };
+    loadOrders();
+
+    // Listen for order updates
+    const handleOrderUpdate = async () => {
+      const updatedOrders = await getOrders();
+      setOrders(updatedOrders);
+    };
+
+    window.addEventListener('order-status-updated', handleOrderUpdate);
+    window.addEventListener('new-order-created', handleOrderUpdate);
+
+    return () => {
+      window.removeEventListener('order-status-updated', handleOrderUpdate);
+      window.removeEventListener('new-order-created', handleOrderUpdate);
+    };
+  }, []);
+
+  // Initialize inventory
+  useEffect(() => {
+    const loadInventory = async () => {
+      const initializedInventory = await initializeInventory(mockInventory);
+      const apiInventory = await getInventory();
+      // Use API inventory if available, otherwise use initialized inventory
+      setInventory(apiInventory.length > 0 ? apiInventory : initializedInventory);
+    };
+    loadInventory();
+
+    // Listen for inventory updates
+    const handleInventoryUpdate = async () => {
+      const updatedInventory = await getInventory();
+      setInventory(updatedInventory);
+    };
+
+    const handleInventoryDelete = async () => {
+      const updatedInventory = await getInventory();
+      setInventory(updatedInventory);
+    };
+
+    window.addEventListener('inventory-updated', handleInventoryUpdate);
+    window.addEventListener('inventory-deleted', handleInventoryDelete);
+
+    return () => {
+      window.removeEventListener('inventory-updated', handleInventoryUpdate);
+      window.removeEventListener('inventory-deleted', handleInventoryDelete);
+    };
   }, []);
 
   const handleInputChange = (field: string, value: string | number | boolean | string[] | undefined) => {
@@ -343,9 +394,14 @@ const Admin = () => {
   };
 
 
-  const handleOrderStatusChange = (orderId: string, newStatus: RecentOrder['status']) => {
-    if (updateOrderStatus(orderId, newStatus)) {
-      setOrders(getOrders());
+  const handleOrderStatusChange = async (orderId: string, newStatus: RecentOrder['status']) => {
+    const success = await updateOrderStatus(orderId, newStatus);
+    if (success) {
+      // Refresh orders from API
+      const updatedOrders = await getOrders();
+      setOrders(updatedOrders);
+    } else {
+      alert('Failed to update order status. Please try again.');
     }
   };
 
@@ -495,7 +551,7 @@ const Admin = () => {
                   Inventory Status
                 </Heading>
                 <div style={style({ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 16 })}>
-                  {mockInventory.map((item) => (
+                  {inventory.map((item) => (
                     <div
                       key={item.productId}
                       style={style({
