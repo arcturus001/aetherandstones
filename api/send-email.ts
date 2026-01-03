@@ -38,10 +38,19 @@ export default async function handler(
       return res.status(400).json({ error: 'Missing "text" field' });
     }
 
-    // Get Resend API key from environment variables
+    // Get Resend API key from environment variables only
+    // NEVER hardcode API keys in the codebase
     const RESEND_API_KEY = process.env.RESEND_API_KEY;
     if (!RESEND_API_KEY) {
       console.error('RESEND_API_KEY environment variable is not set');
+      return res.status(500).json({ 
+        error: 'Email service configuration error. Please contact support.' 
+      });
+    }
+    
+    // Validate that the API key is not a placeholder or example value
+    if (RESEND_API_KEY.includes('your_api_key') || RESEND_API_KEY.includes('example') || RESEND_API_KEY.length < 20) {
+      console.error('Invalid RESEND_API_KEY format detected');
       return res.status(500).json({ 
         error: 'Email service configuration error. Please contact support.' 
       });
