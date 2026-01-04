@@ -36,6 +36,8 @@ CREATE TABLE IF NOT EXISTS orders (
   status VARCHAR(50) NOT NULL,
   payment_provider VARCHAR(50),
   payment_intent_id VARCHAR(255),
+  tracking_number VARCHAR(255),
+  tracking_url VARCHAR(500),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
 );

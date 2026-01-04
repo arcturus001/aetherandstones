@@ -209,6 +209,47 @@ export const AccountOrders = () => {
                 </Text>
               )}
 
+              {/* Tracking Information */}
+              {(order.trackingNumber || order.trackingUrl) && (
+                <div
+                  style={style({
+                    marginTop: 8,
+                    paddingTop: 16,
+                    borderTop: "[1px solid #2E2E2E]",
+                  })}
+                >
+                  <Text
+                    styles={style({
+                      color: "[rgba(255, 255, 255, 0.7)]",
+                      fontSize: "[14px]",
+                      fontWeight: "600",
+                      marginBottom: 4,
+                    })}
+                  >
+                    Tracking:
+                  </Text>
+                  {order.trackingNumber && (
+                    <Text styles={style({ color: "[rgba(255, 255, 255, 0.6)]", fontSize: "[14px]", marginBottom: 4 })}>
+                      {order.trackingNumber}
+                    </Text>
+                  )}
+                  {order.trackingUrl && (
+                    <a
+                      href={order.trackingUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={style({
+                        color: "[rgba(255, 255, 255, 0.8)]",
+                        fontSize: "[14px]",
+                        textDecoration: "underline",
+                      })}
+                    >
+                      Track your package
+                    </a>
+                  )}
+                </div>
+              )}
+
               {/* Shipping Address */}
               {order.shippingAddress && (
                 <div

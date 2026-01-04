@@ -76,7 +76,9 @@ async function getOrders(userId?: string): Promise<RecentOrder[]> {
         shipping_method: string;
         date: Date;
         status: string;
-      }>('SELECT * FROM orders WHERE user_id = $1 ORDER BY date DESC', [userId]);
+        tracking_number: string | null;
+        tracking_url: string | null;
+      }>('SELECT * FROM orders WHERE user_id = $1 ORDER BY created_at DESC', [userId]);
     } else {
       result = await query<{
         id: string;
@@ -91,7 +93,9 @@ async function getOrders(userId?: string): Promise<RecentOrder[]> {
         shipping_method: string;
         date: Date;
         status: string;
-      }>('SELECT * FROM orders ORDER BY date DESC');
+        tracking_number: string | null;
+        tracking_url: string | null;
+      }>('SELECT * FROM orders ORDER BY created_at DESC');
     }
 
     return result.rows.map(row => ({
@@ -107,6 +111,8 @@ async function getOrders(userId?: string): Promise<RecentOrder[]> {
       shippingMethod: row.shipping_method as 'express' | 'standard',
       date: row.date.toISOString(),
       status: row.status as 'gathering' | 'shipped' | 'delivered',
+      trackingNumber: row.tracking_number || undefined,
+      trackingUrl: row.tracking_url || undefined,
     }));
   } catch (error) {
     console.error('Error fetching orders from database:', error);
@@ -241,6 +247,14 @@ export default async function handler(
         if (updateData.shippingMethod !== undefined) {
           updates.push(`shipping_method = $${paramIndex++}`);
           values.push(updateData.shippingMethod);
+        }
+        if (updateData.trackingNumber !== undefined) {
+          updates.push(`tracking_number = $${paramIndex++}`);
+          values.push(updateData.trackingNumber || null);
+        }
+        if (updateData.trackingUrl !== undefined) {
+          updates.push(`tracking_url = $${paramIndex++}`);
+          values.push(updateData.trackingUrl || null);
         }
 
         if (updates.length === 0) {

@@ -89,8 +89,25 @@ export async function initializeDatabase(): Promise<void> {
         status VARCHAR(50) NOT NULL,
         payment_provider VARCHAR(50),
         payment_intent_id VARCHAR(255),
+        tracking_number VARCHAR(255),
+        tracking_url VARCHAR(500),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
+    `);
+    
+    // Add tracking columns if they don't exist (for existing databases)
+    await client.query(`
+      DO $$ 
+      BEGIN
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                       WHERE table_name='orders' AND column_name='tracking_number') THEN
+          ALTER TABLE orders ADD COLUMN tracking_number VARCHAR(255);
+        END IF;
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                       WHERE table_name='orders' AND column_name='tracking_url') THEN
+          ALTER TABLE orders ADD COLUMN tracking_url VARCHAR(500);
+        END IF;
+      END $$;
     `);
 
     // Create password setup tokens table

@@ -3,6 +3,8 @@
  * Uses Resend API for sending transactional emails
  */
 
+import { logger } from './logger';
+
 const RESEND_API_URL = 'https://api.resend.com/emails';
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const APP_URL = process.env.APP_URL || process.env.VITE_APP_URL || 'http://localhost:3000';

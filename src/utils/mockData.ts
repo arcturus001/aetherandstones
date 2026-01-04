@@ -49,6 +49,8 @@ export interface RecentOrder {
   shippingMethod: 'express' | 'standard';
   date: string;
   status: 'gathering' | 'shipped' | 'delivered';
+  trackingNumber?: string;
+  trackingUrl?: string;
   // Legacy fields for backward compatibility
   productName?: string;
   productId?: string;

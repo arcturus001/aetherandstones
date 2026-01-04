@@ -216,17 +216,15 @@ const Checkout = () => {
       // Clear cart after order processing
       clearCart();
       
-      // Navigate to success page with order info and password token if account was auto-created
-      navigate("/order-success", {
-        state: {
-          orderDetails,
-          orderId,
-          userId: createdUserId || currentUser?.id,
-          needsLogin: !currentUser && !createdUserId,
-          passwordToken: passwordToken,
-          userEmail: formData.email,
-        },
+      // Navigate to success page using window.location to ensure redirect works
+      // Pass orderId as query param so OrderSuccess can fetch status even on refresh
+      const params = new URLSearchParams({
+        orderId: orderId,
       });
+      if (createdUserId) params.append('userId', createdUserId);
+      if (passwordToken) params.append('token', passwordToken);
+      
+      window.location.href = `/order-success?${params.toString()}`;
     } catch (error) {
       console.error("Error processing order:", error);
       alert("An error occurred while processing your order. Please try again.");

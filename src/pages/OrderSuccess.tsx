@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import { PageHero } from "../components/PageHero";
@@ -28,8 +28,11 @@ interface Toast {
 const OrderSuccess = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
+  
+  // Read orderId from query params (for refresh-safe behavior) or state (for initial navigation)
+  const orderId = searchParams.get('orderId') || location.state?.orderId as string | undefined;
   const orderDetails = location.state?.orderDetails as OrderDetails | undefined;
-  const orderId = location.state?.orderId as string | undefined;
   
   const [status, setStatus] = useState<PostPurchaseStatus | null>(null);
   const [isLoadingStatus, setIsLoadingStatus] = useState(true);
