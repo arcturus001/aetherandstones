@@ -167,6 +167,47 @@ const Checkout = () => {
       // Save order to backend
       await addOrder(newOrder);
 
+      // Auto-create user account if not logged in
+      let createdUserId: string | undefined = currentUser?.id;
+      let passwordToken: string | null = null;
+      
+      if (!currentUser) {
+        try {
+          const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
+          const userResponse = await fetch(`${API_BASE_URL}/users`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: formData.email,
+              name: formData.fullName,
+              phone: null, // Phone not collected in checkout form
+            }),
+          });
+
+          if (userResponse.ok) {
+            const userData = await userResponse.json();
+            createdUserId = userData.user?.id;
+            passwordToken = userData.token || null; // Token for setting password
+            
+            // Update order with user_id if user was created
+            if (createdUserId) {
+              await fetch(`${API_BASE_URL}/orders`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  orderId,
+                  userId: createdUserId,
+                }),
+              });
+            }
+            console.log('✅ User account auto-created:', formData.email);
+          }
+        } catch (error) {
+          console.error('Error auto-creating user account:', error);
+          // Continue even if user creation fails
+        }
+      }
+
       // Send email notification
       console.log("Attempting to send order notification email...");
       const emailSent = await sendOrderNotificationEmail(orderDetails);
@@ -175,13 +216,15 @@ const Checkout = () => {
       // Clear cart after order processing
       clearCart();
       
-      // Navigate to success page with order info and prompt for login if not logged in
+      // Navigate to success page with order info and password token if account was auto-created
       navigate("/order-success", {
         state: {
           orderDetails,
           orderId,
-          userId: currentUser?.id,
-          needsLogin: !currentUser,
+          userId: createdUserId || currentUser?.id,
+          needsLogin: !currentUser && !createdUserId,
+          passwordToken: passwordToken,
+          userEmail: formData.email,
         },
       });
     } catch (error) {

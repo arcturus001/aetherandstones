@@ -1,80 +1,109 @@
 /**
- * Simple authentication utility
- * NOTE: Client-side authentication is not secure. For production,
- * this should be handled server-side with proper encryption and sessions.
- * 
- * This implementation uses SHA-256 hashing to avoid storing plain text passwords.
- * However, since this runs client-side, determined attackers can still reverse-engineer it.
+ * Authentication utilities for frontend
+ * Handles login, logout, and session management via httpOnly cookies
  */
 
-// Username stored separately (normalized)
-const VALID_USERNAME = "Beglar Akunts";
+const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
-// SHA-256 hash of password
-// Generated using: crypto.createHash('sha256').update('password').digest('hex')
-const PASSWORD_HASH = "fef8043d172f55f0aed6311854916ca7c9567586e6e8e9a0b9f51728a3ab88d8";
-
-/**
- * Hash a string using SHA-256 (Web Crypto API)
- * Falls back to a simple hash if Web Crypto is not available
- */
-async function hashPassword(password: string): Promise<string> {
-  if (typeof window !== 'undefined' && window.crypto && window.crypto.subtle) {
-    try {
-      const encoder = new TextEncoder();
-      const data = encoder.encode(password);
-      const hashBuffer = await window.crypto.subtle.digest('SHA-256', data);
-      const hashArray = Array.from(new Uint8Array(hashBuffer));
-      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-    } catch (error) {
-      console.error('Error hashing password:', error);
-    }
-  }
-  
-  // Fallback: simple hash function
-  let hash = 0;
-  for (let i = 0; i < password.length; i++) {
-    const char = password.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash = hash & hash;
-  }
-  return Math.abs(hash).toString(16) + password.length.toString(16);
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  phone: string | null;
+  createdAt: string;
 }
 
 /**
- * Verify login credentials
+ * Login user with email and password
+ * Sets httpOnly session cookie automatically
  */
-export async function verifyCredentials(username: string, password: string): Promise<boolean> {
-  // Normalize username (trim whitespace)
-  const normalizedUsername = username.trim();
-  
-  // Check username
-  if (normalizedUsername !== VALID_USERNAME) {
-    return false;
+export async function login(email: string, password: string): Promise<{ success: boolean; error?: string; user?: User }> {
+  const emailLower = email.toLowerCase().trim();
+
+  if (!emailLower || !password) {
+    return { success: false, error: 'Email and password required' };
   }
-  
-  // Hash the provided password and compare
-  const providedPasswordHash = await hashPassword(password);
-  
-  // Compare with stored hash
-  return providedPasswordHash === PASSWORD_HASH;
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include', // Required for cookies
+      body: JSON.stringify({
+        email: emailLower,
+        password: password,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return { success: false, error: data.error || 'Login failed' };
+    }
+
+    return { success: true, user: data.user };
+  } catch (error) {
+    console.error('Login error:', error);
+    return { success: false, error: 'Network error. Please check your connection and try again.' };
+  }
+}
+
+/**
+ * Logout user
+ * Clears session cookie
+ */
+export async function logout(): Promise<{ success: boolean; error?: string }> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/logout`, {
+      method: 'POST',
+      credentials: 'include', // Required for cookies
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return { success: false, error: data.error || 'Logout failed' };
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error('Logout error:', error);
+    return { success: false, error: 'Network error. Please try again.' };
+  }
+}
+
+/**
+ * Get current authenticated user
+ * Reads from session cookie
+ */
+export async function getCurrentUser(): Promise<User | null> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/me`, {
+      method: 'GET',
+      credentials: 'include', // Required for cookies
+    });
+
+    if (response.status === 401) {
+      return null; // Not authenticated
+    }
+
+    if (!response.ok) {
+      console.error('Failed to get current user:', response.status);
+      return null;
+    }
+
+    const data = await response.json();
+    return data.user || null;
+  } catch (error) {
+    console.error('Error getting current user:', error);
+    return null;
+  }
 }
 
 /**
  * Check if user is authenticated
  */
-export function isAuthenticated(): boolean {
-  return localStorage.getItem("admin-authenticated") === "true";
+export async function isAuthenticated(): Promise<boolean> {
+  const user = await getCurrentUser();
+  return user !== null;
 }
-
-/**
- * Set authentication state
- */
-export function setAuthenticated(value: boolean): void {
-  if (value) {
-    localStorage.setItem("admin-authenticated", "true");
-  } else {
-    localStorage.removeItem("admin-authenticated");
-  }
-}
-

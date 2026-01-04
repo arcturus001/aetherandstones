@@ -4,8 +4,8 @@ import { primarycolor } from "../styles/primaryColor";
 import { style } from "../utils/styles";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
-import { isAuthenticated, setAuthenticated } from "../utils/auth";
 import { isUserLoggedIn } from "../utils/userAuth";
+import { isAuthenticated as isAdminAuthenticated, setAuthenticated } from "../utils/adminAuth";
 
 export const Header = () => {
   const location = useLocation();
@@ -15,7 +15,7 @@ export const Header = () => {
   const shopDropdownRef = useRef<HTMLDivElement>(null);
   const [cartCount, setCartCount] = useState(() => Number(localStorage.getItem("cart-count") ?? "0"));
   const isAdminRoute = location.pathname.startsWith("/admin");
-  const isAdminAuthenticated = isAuthenticated();
+  const isAdminAuth = isAdminAuthenticated();
 
   useEffect(() => {
     const handler = (event: Event) => {
@@ -153,7 +153,7 @@ export const Header = () => {
     >
       {/* Logo and brand */}
       <Link 
-        to={isAdminRoute && isAdminAuthenticated ? "/admin" : "/"} 
+        to={isAdminRoute && isAdminAuth ? "/admin" : "/"} 
         style={style({ textDecoration: "none", color: "inherit" })}
         onClick={() => setIsMenuOpen(false)}
       >
@@ -171,7 +171,7 @@ export const Header = () => {
           >
             Aether & Stones
           </Text>
-          {isAdminRoute && isAdminAuthenticated && (
+          {isAdminRoute && isAdminAuth && (
             <Text
               styles={style({
                 fontFamily: "[\"Adobe Clean\", \"Helvetica Neue\", \"Arial\", sans-serif]",
@@ -189,7 +189,7 @@ export const Header = () => {
       </Link>
 
       {/* Navigation */}
-      {isAdminRoute && isAdminAuthenticated ? (
+      {isAdminRoute && isAdminAuth ? (
         // Admin Navigation
         <nav className="desktop-nav" style={style({
           position: "absolute",
@@ -472,7 +472,7 @@ export const Header = () => {
 
       {/* Cart/Logout and Hamburger Menu */}
       <div className="header-right-container" style={style({ display: "flex", alignItems: "center", gap: 12, flexShrink: 0, minWidth: 0, flexDirection: "row", paddingRight: 0 })}>
-        {isAdminRoute && isAdminAuthenticated ? (
+        {isAdminRoute && isAdminAuth ? (
           // Logout Button for Admin
           <Button
             variant="secondary"
@@ -539,7 +539,7 @@ export const Header = () => {
           boxShadow: isMenuOpen ? '0 4px 20px rgba(0, 0, 0, 0.3)' : 'none',
         }}
       >
-        {isAdminRoute && isAdminAuthenticated ? (
+        {isAdminRoute && isAdminAuth ? (
           <div style={style({ display: "flex", flexDirection: "column", gap: 16 })}>
             <button
               onClick={() => {

@@ -5,7 +5,8 @@ import { Footer } from "../components/Footer";
 import { PageHero } from "../components/PageHero";
 import { Text, Button, TextField } from "../components/ui";
 import { style } from "../utils/styles";
-import { loginUser, registerUser } from "../utils/userAuth";
+import { login, getCurrentUser } from "../utils/auth";
+import { registerUser } from "../utils/userAuth";
 import { primarycolor } from "../styles/primaryColor";
 
 const Login = () => {
@@ -29,17 +30,31 @@ const Login = () => {
     try {
       let result;
       if (isLogin) {
-        result = await loginUser(email, password);
+        // Use new auth API with session cookies
+        result = await login(email, password);
       } else {
         if (!fullName.trim()) {
           setError("Full name is required");
           setIsLoading(false);
           return;
         }
+        // Registration still uses userAuth (creates account + sets password)
         result = await registerUser(email, password, fullName);
+        // After registration, verify session was created
+        if (result.success) {
+          const currentUser = await getCurrentUser();
+          if (!currentUser) {
+            // If no session, try to login to create one
+            const loginResult = await login(email, password);
+            if (!loginResult.success) {
+              setError("Account created but login failed. Please try logging in.");
+              return;
+            }
+          }
+        }
       }
 
-      if (result.success && result.user) {
+      if (result.success) {
         // Redirect to account page or back to checkout
         navigate(redirectTo, { replace: true });
       } else {

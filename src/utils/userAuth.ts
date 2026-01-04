@@ -13,61 +13,12 @@ export interface User {
   createdAt: string;
 }
 
-const USERS_STORAGE_KEY = "customer-users";
 const CURRENT_USER_KEY = "current-user";
 
-/**
- * Hash a string using SHA-256 (Web Crypto API)
- */
-async function hashPassword(password: string): Promise<string> {
-  if (typeof window !== 'undefined' && window.crypto && window.crypto.subtle) {
-    try {
-      const encoder = new TextEncoder();
-      const data = encoder.encode(password);
-      const hashBuffer = await window.crypto.subtle.digest('SHA-256', data);
-      const hashArray = Array.from(new Uint8Array(hashBuffer));
-      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-    } catch (error) {
-      console.error('Error hashing password:', error);
-    }
-  }
-  
-  // Fallback: simple hash function
-  let hash = 0;
-  for (let i = 0; i < password.length; i++) {
-    const char = password.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash = hash & hash;
-  }
-  return Math.abs(hash).toString(16) + password.length.toString(16);
-}
+// Legacy localStorage functions removed - now using backend API
 
 /**
- * Get all users from storage
- */
-function getUsers(): Map<string, { user: User; passwordHash: string }> {
-  try {
-    const stored = localStorage.getItem(USERS_STORAGE_KEY);
-    if (stored) {
-      const data = JSON.parse(stored);
-      return new Map(data);
-    }
-  } catch (error) {
-    console.error("Failed to load users", error);
-  }
-  return new Map();
-}
-
-/**
- * Save users to storage
- */
-function saveUsers(users: Map<string, { user: User; passwordHash: string }>): void {
-  const data = Array.from(users.entries());
-  localStorage.setItem(USERS_STORAGE_KEY, JSON.stringify(data));
-}
-
-/**
- * Register a new user
+ * Register a new user (uses backend API)
  */
 export async function registerUser(
   email: string,
@@ -85,38 +36,67 @@ export async function registerUser(
     return { success: false, error: "Password must be at least 6 characters" };
   }
   
-  // Check if user already exists
-  const users = getUsers();
-  if (users.has(emailLower)) {
-    return { success: false, error: "Email already registered" };
+  try {
+    const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
+    
+    // First create user (without password)
+    const createResponse = await fetch(`${API_BASE_URL}/users`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: emailLower,
+        name: fullName.trim(),
+      }),
+    });
+
+    const createData = await createResponse.json();
+    
+    if (!createResponse.ok && createResponse.status !== 409) {
+      return { success: false, error: createData.error || "Failed to create account" };
+    }
+    
+    // Set password
+    const passwordResponse = await fetch(`${API_BASE_URL}/users?action=set-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        token: createData.token,
+        email: emailLower,
+        password: password,
+      }),
+    });
+
+    const passwordData = await passwordResponse.json();
+    
+    if (!passwordResponse.ok) {
+      return { success: false, error: passwordData.error || "Failed to set password" };
+    }
+
+    const user: User = {
+      id: passwordData.user.id,
+      email: passwordData.user.email,
+      fullName: passwordData.user.name,
+      createdAt: new Date().toISOString(),
+    };
+    
+    // Auto-login after registration
+    setCurrentUser(user);
+    
+    // Link any existing orders to this user
+    const linkedCount = await linkOrdersToUser(user.id, emailLower);
+    if (linkedCount > 0) {
+      console.log(`Linked ${linkedCount} existing order(s) to your account`);
+    }
+    
+    return { success: true, user };
+  } catch (error) {
+    console.error("Registration error:", error);
+    return { success: false, error: "An error occurred. Please try again." };
   }
-  
-  // Create new user
-  const passwordHash = await hashPassword(password);
-  const user: User = {
-    id: `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-    email: emailLower,
-    fullName: fullName.trim(),
-    createdAt: new Date().toISOString(),
-  };
-  
-  users.set(emailLower, { user, passwordHash });
-  saveUsers(users);
-  
-  // Auto-login after registration
-  setCurrentUser(user);
-  
-  // Link any existing orders to this user
-  const linkedCount = await linkOrdersToUser(user.id, emailLower);
-  if (linkedCount > 0) {
-    console.log(`Linked ${linkedCount} existing order(s) to your account`);
-  }
-  
-  return { success: true, user };
 }
 
 /**
- * Login user
+ * Login user (uses backend API)
  */
 export async function loginUser(
   email: string,
@@ -128,27 +108,43 @@ export async function loginUser(
     return { success: false, error: "Email and password are required" };
   }
   
-  const users = getUsers();
-  const userData = users.get(emailLower);
-  
-  if (!userData) {
-    return { success: false, error: "Invalid email or password" };
+  try {
+    const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
+    const response = await fetch(`${API_BASE_URL}/users?action=login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: emailLower,
+        password: password,
+      }),
+    });
+
+    const data = await response.json();
+    
+    if (!response.ok) {
+      return { success: false, error: data.error || "Login failed" };
+    }
+
+    const user: User = {
+      id: data.user.id,
+      email: data.user.email,
+      fullName: data.user.name,
+      createdAt: new Date().toISOString(),
+    };
+    
+    setCurrentUser(user);
+    
+    // Link any existing orders to this user
+    const linkedCount = await linkOrdersToUser(user.id, emailLower);
+    if (linkedCount > 0) {
+      console.log(`Linked ${linkedCount} existing order(s) to your account`);
+    }
+    
+    return { success: true, user };
+  } catch (error) {
+    console.error("Login error:", error);
+    return { success: false, error: "An error occurred. Please try again." };
   }
-  
-  const passwordHash = await hashPassword(password);
-  if (passwordHash !== userData.passwordHash) {
-    return { success: false, error: "Invalid email or password" };
-  }
-  
-  setCurrentUser(userData.user);
-  
-  // Link any existing orders to this user
-  const linkedCount = await linkOrdersToUser(userData.user.id, emailLower);
-  if (linkedCount > 0) {
-    console.log(`Linked ${linkedCount} existing order(s) to your account`);
-  }
-  
-  return { success: true, user: userData.user };
 }
 
 /**
@@ -177,7 +173,7 @@ export function getCurrentUser(): User | null {
 /**
  * Set current user
  */
-function setCurrentUser(user: User): void {
+export function setCurrentUser(user: User): void {
   localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(user));
   window.dispatchEvent(new CustomEvent("user-auth-change"));
 }

@@ -5,9 +5,9 @@ import { Footer } from "../components/Footer";
 import { PageHero } from "../components/PageHero";
 import { Text, Heading, Button, Badge } from "../components/ui";
 import { style } from "../utils/styles";
-import { getCurrentUser, logoutUser, isUserLoggedIn } from "../utils/userAuth";
+import { getCurrentUser, logout } from "../utils/auth";
 import { getUserOrders, type RecentOrder } from "../utils/orders";
-import type { User } from "../utils/userAuth";
+import type { User } from "../utils/auth";
 import type { OrderItem } from "../utils/mockData";
 
 const Account = () => {
@@ -16,26 +16,28 @@ const Account = () => {
   const [orders, setOrders] = useState<RecentOrder[]>([]);
 
   useEffect(() => {
-    // Check if user is logged in
-    if (!isUserLoggedIn()) {
-      navigate("/login", { state: { redirectTo: "/account" } });
-      return;
-    }
-
-    const currentUser = getCurrentUser();
-    
-    const loadUserOrders = async () => {
-      if (currentUser) {
-        setUser(currentUser);
-        const userOrders = await getUserOrders(currentUser.id);
-        setOrders(userOrders.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+    const loadUserData = async () => {
+      // Get current user from session
+      const currentUser = await getCurrentUser();
+      
+      if (!currentUser) {
+        // ProtectedRoute should handle this, but double-check
+        navigate("/login", { state: { redirectTo: "/account" } });
+        return;
       }
+
+      setUser(currentUser);
+      
+      // Load user orders
+      const userOrders = await getUserOrders(currentUser.id);
+      setOrders(userOrders.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
     };
 
-    loadUserOrders();
+    loadUserData();
 
     // Listen for order updates
     const handleOrderUpdate = async () => {
+      const currentUser = await getCurrentUser();
       if (currentUser) {
         const userOrders = await getUserOrders(currentUser.id);
         setOrders(userOrders.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
@@ -44,12 +46,11 @@ const Account = () => {
 
     window.addEventListener("order-status-updated", handleOrderUpdate);
     return () => window.removeEventListener("order-status-updated", handleOrderUpdate);
-    return () => window.removeEventListener("order-status-updated", handleOrderUpdate);
   }, [navigate]);
 
-  const handleLogout = () => {
-    logoutUser();
-    navigate("/");
+  const handleLogout = async () => {
+    await logout();
+    navigate("/", { replace: true });
   };
 
   const getStatusColor = (status: RecentOrder['status']): "positive" | "informative" | "neutral" | "accent" => {
@@ -107,7 +108,7 @@ const Account = () => {
       >
         <PageHero
           title="My Account"
-          subtitle={`Welcome back, ${user.fullName}`}
+          subtitle={`Welcome back, ${user.name}`}
         />
 
         {/* Account Info */}
@@ -134,7 +135,7 @@ const Account = () => {
             Account Information
           </Heading>
           <Text styles={style({ color: "[rgba(255, 255, 255, 0.7)]" })}>
-            <strong>Name:</strong> {user.fullName}
+            <strong>Name:</strong> {user.name}
           </Text>
           <Text styles={style({ color: "[rgba(255, 255, 255, 0.7)]" })}>
             <strong>Email:</strong> {user.email}

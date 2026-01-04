@@ -5,7 +5,7 @@ import { Text, Heading, Button, TextField, TextArea, Badge, ActionButton } from 
 import { style } from "../utils/styles";
 import { products as initialProducts, type Product } from "../data/products";
 import { primarycolor } from "../styles/primaryColor";
-import { verifyCredentials, isAuthenticated, setAuthenticated } from "../utils/auth";
+import { verifyCredentials, isAuthenticated, setAuthenticated } from "../utils/adminAuth";
 import { mockSalesData, mockInventory, mockRecentOrders, mockTopProducts, type RecentOrder, type InventoryItem } from "../utils/mockData";
 import { initializeOrders, updateOrderStatus, getOrders } from "../utils/orders";
 import { getInventory, initializeInventory } from "../utils/inventory";

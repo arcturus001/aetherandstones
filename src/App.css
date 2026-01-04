@@ -482,6 +482,15 @@ button:hover {
   }
 }
 
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
 @-webkit-keyframes fade-in-up {
   from {
     opacity: 0;
