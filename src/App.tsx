@@ -92,6 +92,8 @@ function App() {
 }
 
 function AppContent() {
+  const location = useLocation();
+  
   return (
     <>
       <ScrollToTop />
@@ -101,7 +103,7 @@ function AppContent() {
         display: "flex",
         flexDirection: "column",
       })}>
-        <Routes>
+        <Routes key={location.pathname + location.search}>
           <Route path="/" element={<Index />} />
           <Route path="/shop" element={<Shop />} />
           <Route path="/energy" element={<EnergyGuide />} />

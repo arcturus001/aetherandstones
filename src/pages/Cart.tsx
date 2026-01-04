@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import { PageHero } from "../components/PageHero";
@@ -17,8 +17,7 @@ import { primarycolor } from "../styles/primaryColor";
 import { ShippingProgressMeter } from "../components/ShippingProgressMeter";
 
 const Cart = () => {
-  const navigate = useNavigate();
-  const products = getProducts();
+  const [products] = useState(() => getProducts());
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [cartProducts, setCartProducts] = useState(
     cartItems.map((item) => {
@@ -446,7 +445,12 @@ const Cart = () => {
             </div>
 
             <button
-              onClick={() => navigate("/checkout")}
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                window.location.href = "/checkout";
+              }}
               className="ui-button ui-button--accent ui-button--l"
               style={style({
                 width: "100%",
@@ -457,7 +461,12 @@ const Cart = () => {
             </button>
 
             <button
-              onClick={() => navigate("/shop")}
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                window.location.href = "/shop";
+              }}
               className="ui-button ui-button--secondary ui-button--l"
               style={style({
                 width: "100%",
