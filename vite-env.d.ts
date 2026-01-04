@@ -6,6 +6,7 @@ interface ImportMetaEnv {
     readonly VITE_IMS_ENV: string;
     readonly VITE_ADOBE_STOCK_API_KEY: string;
     readonly VITE_ADOBE_STOCK_CLIENT_ID: string;
+    readonly VITE_API_URL?: string;
 }
 
 interface ImportMeta {

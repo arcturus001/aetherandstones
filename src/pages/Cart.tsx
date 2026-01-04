@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import { PageHero } from "../components/PageHero";
@@ -17,6 +17,7 @@ import { primarycolor } from "../styles/primaryColor";
 import { ShippingProgressMeter } from "../components/ShippingProgressMeter";
 
 const Cart = () => {
+  const navigate = useNavigate();
   const products = getProducts();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [cartProducts, setCartProducts] = useState(
@@ -444,30 +445,26 @@ const Cart = () => {
               </div>
             </div>
 
-            <Link to="/checkout" style={style({ textDecoration: "none", width: "100%" })}>
-              <Button
-                variant="accent"
-                size="L"
-                styles={style({
-                  width: "100%",
-                  marginTop: 8,
-                })}
-              >
-                Proceed to Checkout
-              </Button>
-            </Link>
+            <button
+              onClick={() => navigate("/checkout")}
+              className="ui-button ui-button--accent ui-button--l"
+              style={style({
+                width: "100%",
+                marginTop: 8,
+              })}
+            >
+              Proceed to Checkout
+            </button>
 
-            <Link to="/shop" style={style({ textDecoration: "none", width: "100%" })}>
-              <Button
-                variant="secondary"
-                size="L"
-                styles={style({
-                  width: "100%",
-                })}
-              >
-                Continue Shopping
-              </Button>
-            </Link>
+            <button
+              onClick={() => navigate("/shop")}
+              className="ui-button ui-button--secondary ui-button--l"
+              style={style({
+                width: "100%",
+              })}
+            >
+              Continue Shopping
+            </button>
           </div>
         </section>
       </main>

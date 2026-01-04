@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import { PageHero } from "../components/PageHero";
@@ -9,6 +9,7 @@ import { isUserLoggedIn } from "../utils/userAuth";
 import { primarycolor } from "../styles/primaryColor";
 
 const OrderSuccess = () => {
+  const navigate = useNavigate();
   const location = useLocation();
   const orderDetails = location.state?.orderDetails as OrderDetails | undefined;
   const orderId = location.state?.orderId as string | undefined;
@@ -174,16 +175,18 @@ const OrderSuccess = () => {
         )}
 
         <div style={style({ display: "flex", gap: 16, flexWrap: "wrap", justifyContent: "center" })}>
-          <Link to="/shop" style={style({ textDecoration: "none" })}>
-            <Button variant="accent" size="L">
-              Continue Shopping
-            </Button>
-          </Link>
-          <Link to="/" style={style({ textDecoration: "none" })}>
-            <Button variant="secondary" size="L">
-              Back to Home
-            </Button>
-          </Link>
+          <button
+            onClick={() => navigate("/shop")}
+            className="ui-button ui-button--accent ui-button--l"
+          >
+            Continue Shopping
+          </button>
+          <button
+            onClick={() => navigate("/")}
+            className="ui-button ui-button--secondary ui-button--l"
+          >
+            Back to Home
+          </button>
         </div>
       </main>
       <Footer />

@@ -223,11 +223,12 @@ const Checkout = () => {
             subtitle="Your cart is empty."
             disclaimer="Add some items to your cart to proceed."
           />
-          <Link to="/shop" style={style({ textDecoration: "none" })}>
-            <Button variant="accent" size="L">
-              Continue Shopping
-            </Button>
-          </Link>
+          <button
+            onClick={() => navigate("/shop")}
+            className="ui-button ui-button--accent ui-button--l"
+          >
+            Continue Shopping
+          </button>
         </main>
         <Footer />
       </div>

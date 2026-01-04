@@ -44,12 +44,17 @@ export const Button: React.FC<ButtonProps> = ({
       e.preventDefault();
       return;
     }
-    onPress?.();
+    // Call onPress first if provided
+    if (onPress) {
+      onPress();
+    }
+    // Then call onClick if provided
     onClick?.(e);
   };
 
   return (
     <button
+      type={onPress ? "button" : "button"}
       className={classes}
       style={styles}
       disabled={isDisabled || isPending}

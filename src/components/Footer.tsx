@@ -1,8 +1,61 @@
 import { Text, Divider } from "./ui";
 import { style } from "../utils/styles";
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import { subscribeEmail } from "../utils/subscriptions";
 
 export const Footer = () => {
+  const [email, setEmail] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [subscribeStatus, setSubscribeStatus] = useState<{
+    type: "success" | "error" | null;
+    message: string;
+  }>({ type: null, message: "" });
+
+  const handleSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!email || !email.includes("@")) {
+      setSubscribeStatus({
+        type: "error",
+        message: "Please enter a valid email address",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    setSubscribeStatus({ type: null, message: "" });
+
+    try {
+      const result = await subscribeEmail(email, undefined, "footer");
+      
+      if (result.success) {
+        // Show success message
+        setSubscribeStatus({
+          type: "success",
+          message: "Thank you! You've been subscribed successfully.",
+        });
+        // Clear the email input immediately
+        setEmail("");
+        // Clear success message after 5 seconds
+        setTimeout(() => {
+          setSubscribeStatus({ type: null, message: "" });
+        }, 5000);
+      } else {
+        setSubscribeStatus({
+          type: "error",
+          message: result.error || "Failed to subscribe. Please try again.",
+        });
+      }
+    } catch (error) {
+      setSubscribeStatus({
+        type: "error",
+        message: "An error occurred. Please try again later.",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
   return (
     <footer
       style={{
@@ -100,30 +153,73 @@ export const Footer = () => {
               Get updates on new collections and energy insights.
             </Text>
           </div>
-          <div style={style({ display: "flex", gap: 8 })}>
-            <input
-              type="email"
-              placeholder="Enter your email"
-              style={{
-                padding: "8px",
-                border: "1px solid #d1d5db",
-                borderRadius: "4px",
-                flex: 1,
-              }}
-            />
-            <button
-              style={{
-                padding: "8px 16px",
-                backgroundColor: "var(--primarycolor)",
-                color: "#050505",
-                border: "none",
-                borderRadius: "4px",
-                cursor: "pointer",
-              }}
-            >
-              Subscribe
-            </button>
-          </div>
+          <form onSubmit={handleSubscribe} style={style({ display: "flex", flexDirection: "column", gap: 8 })}>
+            <div style={style({ display: "flex", gap: 8 })}>
+              <input
+                type="email"
+                placeholder="Enter your email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={isSubmitting}
+                required
+                style={{
+                  padding: "8px 12px",
+                  border: subscribeStatus.type === "error" 
+                    ? "1px solid #ef4444" 
+                    : "1px solid #2E2E2E",
+                  borderRadius: "4px",
+                  flex: 1,
+                  backgroundColor: "#0a0a0a",
+                  color: "white",
+                  fontSize: "14px",
+                }}
+              />
+              <button
+                type="submit"
+                disabled={isSubmitting || !email}
+                style={{
+                  padding: "8px 16px",
+                  backgroundColor: isSubmitting || !email 
+                    ? "rgba(203, 109, 71, 0.5)" 
+                    : "var(--primarycolor)",
+                  color: "#050505",
+                  border: "none",
+                  borderRadius: "4px",
+                  cursor: isSubmitting || !email ? "not-allowed" : "pointer",
+                  fontWeight: "600",
+                  fontSize: "14px",
+                  transition: "background-color 0.2s",
+                }}
+              >
+                {isSubmitting ? "Subscribing..." : "Subscribe"}
+              </button>
+            </div>
+            {subscribeStatus.type && (
+              <div
+                style={style({
+                  padding: "8px 12px",
+                  borderRadius: "4px",
+                  backgroundColor: subscribeStatus.type === "success" 
+                    ? "rgba(16, 185, 129, 0.1)" 
+                    : "rgba(239, 68, 68, 0.1)",
+                  border: `1px solid ${subscribeStatus.type === "success" ? "#10b981" : "#ef4444"}`,
+                  marginTop: 8,
+                })}
+              >
+                <Text
+                  styles={style({
+                    color: subscribeStatus.type === "success" 
+                      ? "#10b981" 
+                      : "#ef4444",
+                    fontSize: "[0.875rem]",
+                    fontWeight: subscribeStatus.type === "success" ? "500" : "400",
+                  })}
+                >
+                  {subscribeStatus.message}
+                </Text>
+              </div>
+            )}
+          </form>
         </div>
       </div>
 

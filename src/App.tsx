@@ -86,6 +86,14 @@ function App() {
 
   return (
     <BrowserRouter>
+      <AppContent />
+    </BrowserRouter>
+  );
+}
+
+function AppContent() {
+  return (
+    <>
       <ScrollToTop />
       <div style={style({
         minHeight: "[100vh]",
@@ -115,7 +123,7 @@ function App() {
           <Route path="/sitemap.xml" element={<Sitemap />} />
         </Routes>
       </div>
-    </BrowserRouter>
+    </>
   );
 }
 
