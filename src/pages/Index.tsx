@@ -7,9 +7,9 @@ import { SEO } from "../components/SEO";
 import { ArrowDownBounce } from "../components/ArrowDownBounce";
 import { homeCopy } from "../data/copy";
 import { getProducts } from "../utils/products";
-import { heroVideoSrc, heroPlaceholderSrc, ruleImage, hoverGreenImage, obsidianImage, brownImage, purpleImage } from "../assets";
+import { heroVideoSrc, heroPlaceholderSrc, productImages, ruleImage, hoverGreenImage, obsidianImage, brownImage, purpleImage } from "../assets";
 import { primarycolor } from "../styles/primaryColor";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 
 const Index = () => {
@@ -22,6 +22,7 @@ const Index = () => {
   const mainRef = useRef<HTMLElement>(null);
   const heroSectionRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [videoReady, setVideoReady] = useState(false);
 
   useEffect(() => {
     const positionSections = () => {
@@ -80,6 +81,36 @@ const Index = () => {
     window.addEventListener("resize", positionSections);
     return () => window.removeEventListener("resize", positionSections);
   }, []);
+
+  // Handle video loading - show placeholder first, then video when ready
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || !heroVideoSrc) return;
+
+    const handleCanPlay = () => {
+      setVideoReady(true);
+      // Start playing the video once it's ready
+      video.play().catch((error) => {
+        console.warn('Video autoplay failed:', error);
+      });
+    };
+
+    const handleLoadedData = () => {
+      // Video data is loaded, ready to play
+      setVideoReady(true);
+    };
+
+    video.addEventListener('canplay', handleCanPlay);
+    video.addEventListener('loadeddata', handleLoadedData);
+    
+    // Preload the video but don't autoplay until ready
+    video.load();
+
+    return () => {
+      video.removeEventListener('canplay', handleCanPlay);
+      video.removeEventListener('loadeddata', handleLoadedData);
+    };
+  }, []);
   const featuredHeadingStyles = style({
     fontSize: "[40px]",
     color: "white",
@@ -124,15 +155,34 @@ const Index = () => {
             paddingTop: "80px", // Account for fixed header height
           }}
         >
-          {/* Video element with poster placeholder */}
-          {heroVideoSrc ? (
-            <video
-              ref={videoRef}
-              autoPlay
-              loop
-              muted
-              playsInline
-              poster={heroPlaceholderSrc || undefined}
+          {/* Placeholder image - loads first, always shown when video exists */}
+          {heroVideoSrc && (
+            <img
+              src={heroPlaceholderSrc || productImages.amethyst}
+              alt="Hero banner"
+              style={{
+                position: "absolute",
+                inset: 0,
+                top: 0,
+                bottom: 0,
+                left: 0,
+                right: 0,
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                objectPosition: "center",
+                zIndex: videoReady ? 0 : 1,
+                opacity: videoReady ? 0 : 1,
+                transition: "opacity 0.5s ease-in-out",
+              }}
+            />
+          )}
+          
+          {/* Fallback: Show placeholder image if no video */}
+          {!heroVideoSrc && heroPlaceholderSrc && (
+            <img
+              src={heroPlaceholderSrc}
+              alt="Hero banner"
               style={{
                 position: "absolute",
                 inset: 0,
@@ -146,10 +196,36 @@ const Index = () => {
                 objectPosition: "center",
                 zIndex: 0,
               }}
+            />
+          )}
+          
+          {/* Video element - loads after placeholder */}
+          {heroVideoSrc && (
+            <video
+              ref={videoRef}
+              loop
+              muted
+              playsInline
+              preload="auto"
+              style={{
+                position: "absolute",
+                inset: 0,
+                top: 0,
+                bottom: 0,
+                left: 0,
+                right: 0,
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+                objectPosition: "center",
+                zIndex: videoReady ? 1 : 0,
+                opacity: videoReady ? 1 : 0,
+                transition: "opacity 0.5s ease-in-out",
+              }}
             >
               <source src={heroVideoSrc} type="video/mp4" />
             </video>
-          ) : null}
+          )}
           <div
             style={{
               position: "absolute",
