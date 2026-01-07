@@ -226,6 +226,7 @@ const Index = () => {
               <source src={heroVideoSrc} type="video/mp4" />
             </video>
           )}
+          {/* 50% transparent black overlay */}
           <div
             style={{
               position: "absolute",
@@ -235,7 +236,8 @@ const Index = () => {
               left: 0,
               right: 0,
               backgroundColor: "black",
-              opacity: 0.7,
+              opacity: 0.5,
+              zIndex: 2,
             }}
           />
           <div className="hero-content-container" style={{
