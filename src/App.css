@@ -862,7 +862,6 @@ button:hover {
 }
 
 /* Move cart button 80px to the left on viewports 375px to 500px */
-/* Hide For Her / For Him cards and arrow animation on mobile */
 @media (max-width: 500px) {
   .hero-category-cards {
     display: none !important;
