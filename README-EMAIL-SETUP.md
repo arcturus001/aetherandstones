@@ -245,3 +245,4 @@ https://your-domain.com/set-password?token=abc123...&email=john@example.com
 This link expires in 24 hours.
 ```
 
+

@@ -117,3 +117,4 @@ export function logEnvStatus(): void {
   console.log(`   STRIPE_WEBHOOK_SECRET: ${config.STRIPE_WEBHOOK_SECRET ? '✅ Set' : '❌ Missing'}`);
 }
 
+

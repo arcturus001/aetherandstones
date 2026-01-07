@@ -335,85 +335,9 @@ export const Header = () => {
                     All Products
                   </Text>
                 </Link>
-                <Link 
-                  to="/shop?category=forHer" 
-                  onClick={() => setIsShopDropdownOpen(false)}
-                  style={style({ 
-                    textDecoration: 'none', 
-                    color: 'white',
-                    display: 'block',
-                    padding: '12px 16px',
-                    transition: 'background-color 0.2s',
-                  })}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = 'rgba(203, 109, 71, 0.2)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = 'transparent';
-                  }}
-                >
-                  <Text styles={style({ color: 'white', fontSize: '[14px]' })}>
-                    For Her
-                  </Text>
-                </Link>
-                <Link 
-                  to="/shop?category=forHim" 
-                  onClick={() => setIsShopDropdownOpen(false)}
-                  style={style({ 
-                    textDecoration: 'none', 
-                    color: 'white',
-                    display: 'block',
-                    padding: '12px 16px',
-                    transition: 'background-color 0.2s',
-                  })}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = 'rgba(203, 109, 71, 0.2)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = 'transparent';
-                  }}
-                >
-                  <Text styles={style({ color: 'white', fontSize: '[14px]' })}>
-                    For Him
-                  </Text>
-                </Link>
               </div>
             )}
           </div>
-          <Link 
-            to="/shop?category=forHer" 
-            style={style({ 
-              textDecoration: 'none', 
-              color: 'white',
-              display: 'inline-block'
-            })}
-          >
-            <ActionButton 
-              isQuiet 
-              styles={style({ 
-                color: location.search.includes("category=forHer") ? primarycolor : 'white' 
-              })}
-            >
-              For Her
-            </ActionButton>
-          </Link>
-          <Link 
-            to="/shop?category=forHim" 
-            style={style({ 
-              textDecoration: 'none', 
-              color: 'white',
-              display: 'inline-block'
-            })}
-          >
-            <ActionButton 
-              isQuiet 
-              styles={style({ 
-                color: location.search.includes("category=forHim") ? primarycolor : 'white' 
-              })}
-            >
-              For Him
-            </ActionButton>
-          </Link>
           <Link 
             to="/energy" 
             style={style({ 
@@ -653,38 +577,6 @@ export const Header = () => {
               })}
             >
               All Products
-            </Link>
-            <Link
-              to="/shop?category=forHer"
-              onClick={() => setIsMenuOpen(false)}
-              style={style({
-                textDecoration: 'none',
-                color: 'white',
-                padding: "16px",
-                border: "1px solid #2E2E2E",
-                borderRadius: "8px",
-                textAlign: "left",
-                fontSize: "16px",
-                transition: "all 0.2s",
-              })}
-            >
-              For Her
-            </Link>
-            <Link
-              to="/shop?category=forHim"
-              onClick={() => setIsMenuOpen(false)}
-              style={style({
-                textDecoration: 'none',
-                color: 'white',
-                padding: "16px",
-                border: "1px solid #2E2E2E",
-                borderRadius: "8px",
-                textAlign: "left",
-                fontSize: "16px",
-                transition: "all 0.2s",
-              })}
-            >
-              For Him
             </Link>
             <Link
               to="/energy"
