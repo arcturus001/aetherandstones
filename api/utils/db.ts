@@ -327,4 +327,3 @@ export async function query<T extends pg.QueryResultRow = Record<string, unknown
     client.release();
   }
 }
-

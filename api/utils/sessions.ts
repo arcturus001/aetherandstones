@@ -3,7 +3,7 @@
  * DB-backed sessions with secure cookie handling
  */
 
-import { query } from '../db';
+import { query } from './db';
 import crypto from 'crypto';
 
 const SESSION_COOKIE_NAME = 'aether_session';

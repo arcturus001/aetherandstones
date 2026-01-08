@@ -126,7 +126,7 @@ const SetPassword = () => {
       // After password is set, create a session by logging in
       // This ensures the user is authenticated with a session cookie
       try {
-        const loginResponse = await fetch(`${API_BASE_URL}/auth/login`, {
+        const loginResponse = await fetch(`${API_BASE_URL}/auth?action=login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include', // Required for cookies

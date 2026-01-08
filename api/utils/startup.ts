@@ -4,7 +4,7 @@
  */
 
 import { validateEnv, logEnvStatus } from './env';
-import { testConnection } from '../db';
+import { testConnection } from './db';
 import { logger } from './logger';
 
 /**

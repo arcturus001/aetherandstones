@@ -5,7 +5,7 @@
  */
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { query, initializeDatabase } from './db';
+import { query, initializeDatabase } from './utils/db';
 import { generateToken, hashToken } from './utils/security';
 import { sendPasswordSetupEmail } from './utils/email';
 import { logger } from './utils/logger';

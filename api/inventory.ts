@@ -7,7 +7,7 @@
  */
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { query, initializeDatabase } from './db';
+import { query, initializeDatabase } from './utils/db';
 
 export interface InventoryItem {
   productId: string;

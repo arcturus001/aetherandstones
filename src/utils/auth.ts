@@ -25,7 +25,7 @@ export async function login(email: string, password: string): Promise<{ success:
   }
 
   try {
-    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+    const response = await fetch(`${API_BASE_URL}/auth?action=login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include', // Required for cookies
@@ -54,7 +54,7 @@ export async function login(email: string, password: string): Promise<{ success:
  */
 export async function logout(): Promise<{ success: boolean; error?: string }> {
   try {
-    const response = await fetch(`${API_BASE_URL}/auth/logout`, {
+    const response = await fetch(`${API_BASE_URL}/auth?action=logout`, {
       method: 'POST',
       credentials: 'include', // Required for cookies
     });
@@ -78,7 +78,7 @@ export async function logout(): Promise<{ success: boolean; error?: string }> {
  */
 export async function getCurrentUser(): Promise<User | null> {
   try {
-    const response = await fetch(`${API_BASE_URL}/auth/me`, {
+    const response = await fetch(`${API_BASE_URL}/auth`, {
       method: 'GET',
       credentials: 'include', // Required for cookies
     });
