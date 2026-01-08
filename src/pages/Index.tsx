@@ -7,7 +7,7 @@ import { SEO } from "../components/SEO";
 import { ArrowDownBounce } from "../components/ArrowDownBounce";
 import { homeCopy } from "../data/copy";
 import { getProducts } from "../utils/products";
-import { heroVideoSrc, heroPlaceholderSrc, productImages, ruleImage, hoverGreenImage, obsidianImage, brownImage, purpleImage } from "../assets";
+import { heroVideoSrc, heroPlaceholderSrc, ruleImage, hoverGreenImage, obsidianImage, brownImage, purpleImage } from "../assets";
 import { primarycolor } from "../styles/primaryColor";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
@@ -156,10 +156,10 @@ const Index = () => {
             paddingTop: "80px", // Account for fixed header height
           }}
         >
-          {/* Placeholder image - loads first, always shown when video exists */}
-          {heroVideoSrc && (
+          {/* Placeholder image - loads first (only use the dedicated hero placeholder, never a product image) */}
+          {heroVideoSrc && heroPlaceholderSrc && (
             <img
-              src={heroPlaceholderSrc || productImages.amethyst}
+              src={heroPlaceholderSrc}
               alt="Hero banner"
               style={{
                 position: "absolute",
