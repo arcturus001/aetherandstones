@@ -70,8 +70,8 @@ async function getOrders(userId?: string): Promise<RecentOrder[]> {
         user_id: string | null;
         customer_name: string;
         customer_email: string;
-        items: any;
-        shipping_address: any;
+        items: OrderItem[] | string;
+        shipping_address: Record<string, unknown> | string;
         subtotal: number;
         shipping_cost: number;
         total: number;
@@ -87,8 +87,8 @@ async function getOrders(userId?: string): Promise<RecentOrder[]> {
         user_id: string | null;
         customer_name: string;
         customer_email: string;
-        items: any;
-        shipping_address: any;
+        items: OrderItem[] | string;
+        shipping_address: Record<string, unknown> | string;
         subtotal: number;
         shipping_cost: number;
         total: number;
@@ -215,7 +215,7 @@ export default async function handler(
       try {
         // Build update query dynamically based on provided fields
         const updates: string[] = [];
-        const values: any[] = [];
+        const values: (string | number | boolean | null)[] = [];
         let paramIndex = 1;
 
         if (updateData.status !== undefined) {
@@ -266,7 +266,29 @@ export default async function handler(
         updates.push(`updated_at = CURRENT_TIMESTAMP`);
         values.push(orderId);
 
-        const result = await query(
+        const result = await query<{
+          id: string;
+          user_id: string | null;
+          customer_name: string;
+          customer_email: string;
+          items: OrderItem[] | string;
+          shipping_address: {
+            fullName: string;
+            address: string;
+            city: string;
+            state: string;
+            postalCode: string;
+            country: string;
+          } | string;
+          subtotal: number;
+          shipping_cost: number;
+          total: number;
+          shipping_method: string;
+          date: Date;
+          status: string;
+          tracking_number: string | null;
+          tracking_url: string | null;
+        }>(
           `UPDATE orders SET ${updates.join(', ')} WHERE id = $${paramIndex} RETURNING *`,
           values
         );

@@ -143,7 +143,8 @@ export const updateOrderStatus = async (orderId: string, newStatus: RecentOrder[
 export const addOrder = async (order: RecentOrder): Promise<boolean> => {
   try {
     // Prepare order data for API (exclude id and date, API will generate them)
-    const { id, date, ...orderData } = order;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { id: _id, date: _date, ...orderData } = order;
 
     const response = await fetch(`${API_BASE_URL}/orders`, {
       method: 'POST',

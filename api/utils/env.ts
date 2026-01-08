@@ -22,7 +22,8 @@ const requiredEnvVars = [
   'STRIPE_WEBHOOK_SECRET',
 ] as const;
 
-const optionalEnvVars = [
+// Optional environment variables (used for reference/documentation)
+export const optionalEnvVars = [
   'SESSION_SECRET',
   'FROM_EMAIL',
   'NODE_ENV',

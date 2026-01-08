@@ -152,7 +152,7 @@ export default async function handler(
       try {
         // Build update query dynamically
         const updates: string[] = [];
-        const values: any[] = [];
+        const values: (string | number | boolean | null)[] = [];
         let paramIndex = 1;
 
         if (itemData.productName !== undefined) {

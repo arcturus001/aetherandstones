@@ -3,7 +3,7 @@
  * Tests: token generation, validation, expiration, single-use enforcement
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { generateToken, hashToken } from '../utils/security';
 
 describe('Token Flow', () => {

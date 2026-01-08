@@ -9,9 +9,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { query, initializeDatabase } from './db';
 import { validateSession, SESSION_COOKIE_NAME } from './utils/sessions';
-import { serialize } from 'cookie';
 
-const isProduction = process.env.NODE_ENV === 'production';
 const APP_URL = process.env.APP_URL || process.env.VITE_APP_URL || 'http://localhost:3000';
 
 /**
