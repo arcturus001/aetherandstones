@@ -6,7 +6,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 const RESEND_API_URL = 'https://api.resend.com/emails';
-const ADMIN_EMAIL = 'Petrosyan12123@gmail.com';
 
 interface EmailPayload {
   to: string[];

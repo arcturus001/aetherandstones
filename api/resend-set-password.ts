@@ -8,22 +8,12 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { query, initializeDatabase } from './db';
 import { generateToken, hashToken } from './utils/security';
 import { sendPasswordSetupEmail } from './utils/email';
-import { validateSession, SESSION_COOKIE_NAME } from './utils/sessions';
 import { logger } from './utils/logger';
 
 const APP_URL = process.env.APP_URL || process.env.VITE_APP_URL || 'http://localhost:3000';
 
 // Simple in-memory rate limiting (for serverless, consider Redis in production)
 const rateLimitMap = new Map<string, number>();
-
-/**
- * Get session token from cookie
- */
-function getSessionToken(req: VercelRequest): string | null {
-  const cookies = req.headers.cookie || '';
-  const cookieMatch = cookies.match(new RegExp(`(^| )${SESSION_COOKIE_NAME}=([^;]+)`));
-  return cookieMatch ? cookieMatch[2] : null;
-}
 
 /**
  * Check rate limit: one per 60 seconds per order/user

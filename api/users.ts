@@ -19,15 +19,6 @@ import {
 import { sendPasswordSetupEmail } from './utils/email';
 import { logger } from './utils/logger';
 
-interface User {
-  id: string;
-  email: string;
-  name: string;
-  phone?: string | null;
-  passwordHash?: string | null;
-  createdAt: string;
-}
-
 export default async function handler(
   req: VercelRequest,
   res: VercelResponse
@@ -120,7 +111,6 @@ export default async function handler(
         });
       } catch (error: unknown) {
         // Log error without sensitive data
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
         const errorCode = error && typeof error === 'object' && 'code' in error ? error.code : null;
         
         logger.error('Error creating user', error, {
@@ -241,9 +231,7 @@ export default async function handler(
           [tokenData.id]
         );
 
-        // Clear rate limit on success
-        const rateLimitKey = `set-password:${email.toLowerCase()}:${clientIp}`;
-        // Note: We don't export clearRateLimit, but rate limit will naturally expire
+        // Note: Rate limit will naturally expire on success
         
         // Log success without sensitive data
         logger.auth('password_set', user.id, {
@@ -255,7 +243,6 @@ export default async function handler(
         });
       } catch (error: unknown) {
         // Log error without sensitive data
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
         logger.error('Error setting password', error, {
           email: email.substring(0, 3) + '***',
         });
@@ -308,7 +295,6 @@ export default async function handler(
         });
       } catch (error: unknown) {
         // Log error without sensitive data
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
         logger.error('Error logging in', error, {
           email: email.toLowerCase().substring(0, 3) + '***',
         });
@@ -385,8 +371,7 @@ export default async function handler(
           email: email, // Return actual email for API call (used server-side)
         });
       } catch (error: unknown) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        console.error('Error validating token:', errorMessage);
+        logger.error('Error validating token', error);
         return res.status(500).json({
           error: 'Failed to validate token',
           message: 'An error occurred. Please try again later.',
@@ -397,6 +382,11 @@ export default async function handler(
     // GET /api/users/:email - Get user by email
     if (req.method === 'GET' && req.query.email) {
       try {
+        const emailParam = Array.isArray(req.query.email) 
+          ? req.query.email[0] 
+          : req.query.email;
+        const emailLower = typeof emailParam === 'string' ? emailParam.toLowerCase() : '';
+        
         const result = await query<{
           id: string;
           email: string;
@@ -404,7 +394,7 @@ export default async function handler(
           created_at: Date;
         }>(
           `SELECT id, email, name, created_at FROM users WHERE email = $1`,
-          [req.query.email.toLowerCase()]
+          [emailLower]
         );
 
         if (result.rows.length === 0) {
@@ -422,9 +412,11 @@ export default async function handler(
         });
       } catch (error: unknown) {
         // Log error without sensitive data
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        const emailParam = Array.isArray(req.query.email) 
+          ? req.query.email[0] 
+          : req.query.email;
         logger.error('Error fetching user', error, {
-          email: req.query.email?.toString().substring(0, 3) + '***',
+          email: emailParam?.toString().substring(0, 3) + '***',
         });
         return res.status(500).json({
           error: 'Failed to fetch user',
@@ -436,7 +428,6 @@ export default async function handler(
     return res.status(405).json({ error: 'Method not allowed' });
   } catch (error: unknown) {
     // Log error without sensitive data
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     logger.error('Error handling users request', error, {
       method: req.method,
       action: req.query.action?.toString(),
