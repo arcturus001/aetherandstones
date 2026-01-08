@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { generateToken, hashToken } from '../utils/security';
+import { generateToken, hashToken } from '../_utils/security';
 
 describe('Token Flow', () => {
   describe('Token Generation', () => {

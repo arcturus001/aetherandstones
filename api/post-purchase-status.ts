@@ -5,8 +5,8 @@
  */
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { query, initializeDatabase } from './utils/db';
-import { validateSession, getSessionToken } from './utils/sessions';
+import { query, initializeDatabase } from './_utils/db';
+import { validateSession, getSessionToken } from './_utils/sessions';
 
 const APP_URL = process.env.APP_URL || process.env.VITE_APP_URL || 'http://localhost:3000';
 

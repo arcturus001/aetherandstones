@@ -5,10 +5,10 @@
  */
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { query, initializeDatabase } from './utils/db';
-import { generateToken, hashToken } from './utils/security';
-import { sendPasswordSetupEmail } from './utils/email';
-import { logger } from './utils/logger';
+import { query, initializeDatabase } from './_utils/db';
+import { generateToken, hashToken } from './_utils/security';
+import { sendPasswordSetupEmail } from './_utils/email';
+import { logger } from './_utils/logger';
 
 const APP_URL = process.env.APP_URL || process.env.VITE_APP_URL || 'http://localhost:3000';
 

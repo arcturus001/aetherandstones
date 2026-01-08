@@ -7,7 +7,7 @@
  */
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { query, initializeDatabase } from './utils/db';
+import { query, initializeDatabase } from './_utils/db';
 import {
   generateToken,
   hashToken,
@@ -15,9 +15,9 @@ import {
   verifyPassword,
   checkRateLimit,
   getRemainingAttempts,
-} from './utils/security';
-import { sendPasswordSetupEmail } from './utils/email';
-import { logger } from './utils/logger';
+} from './_utils/security';
+import { sendPasswordSetupEmail } from './_utils/email';
+import { logger } from './_utils/logger';
 
 export default async function handler(
   req: VercelRequest,

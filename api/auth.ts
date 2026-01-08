@@ -6,11 +6,11 @@
  */
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { query, initializeDatabase } from './utils/db';
-import { verifyPassword } from './utils/security';
-import { createSession, validateSession, deleteSession, getSessionToken, SESSION_COOKIE_NAME } from './utils/sessions';
+import { query, initializeDatabase } from './_utils/db';
+import { verifyPassword } from './_utils/security';
+import { createSession, validateSession, deleteSession, getSessionToken, SESSION_COOKIE_NAME } from './_utils/sessions';
 import { serialize } from 'cookie';
-import { logger } from './utils/logger';
+import { logger } from './_utils/logger';
 
 const isProduction = process.env.NODE_ENV === 'production';
 const APP_URL = process.env.APP_URL || process.env.VITE_APP_URL || 'http://localhost:3000';
