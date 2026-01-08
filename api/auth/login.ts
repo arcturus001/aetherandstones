@@ -104,7 +104,6 @@ export default async function handler(
           },
         });
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     logger.error('Error logging in', error, {
       email: email.toLowerCase().substring(0, 3) + '***',
     });

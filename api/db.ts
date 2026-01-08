@@ -263,7 +263,7 @@ export async function initializeDatabase(): Promise<void> {
 }
 
 // Helper to execute queries with error handling
-export async function query<T = any>(text: string, params?: any[]): Promise<pg.QueryResult<T>> {
+export async function query<T extends pg.QueryResultRow = Record<string, unknown>>(text: string, params?: (string | number | boolean | null | object)[]): Promise<pg.QueryResult<T>> {
   const client = await pool.connect();
   try {
     const result = await client.query<T>(text, params);

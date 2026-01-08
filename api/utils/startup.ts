@@ -17,7 +17,7 @@ export async function startup(): Promise<void> {
   const envValidation = validateEnv();
   if (!envValidation.valid) {
     logger.error('Missing required environment variables', undefined, {
-      missing: envValidation.missing,
+      missing: envValidation.missing.join(', '),
     });
     throw new Error(`Missing required environment variables: ${envValidation.missing.join(', ')}`);
   }

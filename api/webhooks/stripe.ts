@@ -15,9 +15,9 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import Stripe from 'stripe';
 import { query, initializeDatabase } from '../db';
-import { generateToken, hashToken } from './utils/security';
-import { sendPasswordSetupEmail } from './utils/email';
-import { logger } from './utils/logger';
+import { generateToken, hashToken } from '../utils/security';
+import { sendPasswordSetupEmail } from '../utils/email';
+import { logger } from '../utils/logger';
 
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
 const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET;
@@ -31,7 +31,7 @@ if (!STRIPE_WEBHOOK_SECRET) {
 }
 
 const stripe = STRIPE_SECRET_KEY ? new Stripe(STRIPE_SECRET_KEY, {
-  apiVersion: '2024-12-18.acacia',
+  apiVersion: '2025-12-15.clover',
 }) : null;
 
 interface StripeWebhookEvent {
@@ -69,10 +69,12 @@ function extractCustomerInfo(event: StripeWebhookEvent): {
     const paymentIntent = obj as Stripe.PaymentIntent;
 
     // Get customer details if available
+    const customer = paymentIntent.customer;
+    const customerEmail = customer && typeof customer !== 'string' && 'email' in customer
+      ? (customer as Stripe.Customer).email
+      : null;
     const email = paymentIntent.receipt_email || 
-                  (paymentIntent.customer && typeof paymentIntent.customer !== 'string' 
-                    ? paymentIntent.customer.email 
-                    : null) ||
+                  customerEmail ||
                   paymentIntent.metadata?.email ||
                   '';
 
@@ -112,13 +114,13 @@ function extractCustomerInfo(event: StripeWebhookEvent): {
       email: session.customer_details?.email || session.customer_email || '',
       name: session.customer_details?.name || '',
       phone: session.customer_details?.phone || null,
-      shippingAddress: session.shipping_details ? {
-        line1: session.shipping_details.address?.line1 || '',
-        line2: session.shipping_details.address?.line2 || null,
-        city: session.shipping_details.address?.city || '',
-        region: session.shipping_details.address?.state || null,
-        postalCode: session.shipping_details.address?.postal_code || '',
-        country: session.shipping_details.address?.country || '',
+      shippingAddress: (session as unknown as { shipping_details?: { address?: Stripe.Address } }).shipping_details ? {
+        line1: (session as unknown as { shipping_details?: { address?: Stripe.Address } }).shipping_details?.address?.line1 || '',
+        line2: (session as unknown as { shipping_details?: { address?: Stripe.Address } }).shipping_details?.address?.line2 || null,
+        city: (session as unknown as { shipping_details?: { address?: Stripe.Address } }).shipping_details?.address?.city || '',
+        region: (session as unknown as { shipping_details?: { address?: Stripe.Address } }).shipping_details?.address?.state || null,
+        postalCode: (session as unknown as { shipping_details?: { address?: Stripe.Address } }).shipping_details?.address?.postal_code || '',
+        country: (session as unknown as { shipping_details?: { address?: Stripe.Address } }).shipping_details?.address?.country || '',
       } : null,
       paymentIntentId: typeof session.payment_intent === 'string' 
         ? session.payment_intent 
@@ -383,7 +385,7 @@ export default async function handler(
     const customerInfo = extractCustomerInfo({
       id: event.id,
       type: event.type,
-      data: event.data,
+      data: event.data as { object: Stripe.PaymentIntent | Stripe.Checkout.Session },
     });
 
     if (!customerInfo) {
