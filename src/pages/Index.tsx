@@ -145,6 +145,7 @@ const Index = () => {
         {/* Hero Section */}
         <section
           ref={heroSectionRef}
+          className="hero-section-fullbleed"
           style={{
             position: "relative",
             height: "100vh",
