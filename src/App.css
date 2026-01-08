@@ -583,6 +583,12 @@ button:hover {
     font-size: 60px !important;
     line-height: 1.2 !important;
   }
+  /* Match iOS status bar theme color with the top header on mobile */
+  .main-header {
+    background-color: #141414 !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
   .desktop-nav {
     display: none !important;
     visibility: hidden !important;
