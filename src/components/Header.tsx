@@ -4,7 +4,7 @@ import { primarycolor } from "../styles/primaryColor";
 import { style } from "../utils/styles";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
-import { isUserLoggedIn } from "../utils/userAuth";
+import { getCurrentUser } from "../utils/auth";
 import { isAuthenticated as isAdminAuthenticated, setAuthenticated } from "../utils/adminAuth";
 
 export const Header = () => {
@@ -14,8 +14,18 @@ export const Header = () => {
   const [isShopDropdownOpen, setIsShopDropdownOpen] = useState(false);
   const shopDropdownRef = useRef<HTMLDivElement>(null);
   const [cartCount, setCartCount] = useState(() => Number(localStorage.getItem("cart-count") ?? "0"));
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
   const isAdminRoute = location.pathname.startsWith("/admin");
   const isAdminAuth = isAdminAuthenticated();
+
+  // Check if user is logged in via session cookie
+  useEffect(() => {
+    const checkAuth = async () => {
+      const user = await getCurrentUser();
+      setIsUserLoggedIn(user !== null);
+    };
+    checkAuth();
+  }, [location.pathname]); // Re-check on route changes
 
   useEffect(() => {
     const handler = (event: Event) => {
@@ -372,7 +382,7 @@ export const Header = () => {
             About
           </ActionButton>
         </Link>
-        {isUserLoggedIn() && (
+        {isUserLoggedIn && (
           <Link 
             to="/account" 
             style={style({ 
@@ -610,7 +620,7 @@ export const Header = () => {
             >
               About
             </Link>
-            {isUserLoggedIn() && (
+            {isUserLoggedIn && (
               <Link
                 to="/account"
                 onClick={() => setIsMenuOpen(false)}

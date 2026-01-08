@@ -173,7 +173,7 @@ export default async function handler(
         }
 
         // Always update status based on stock
-        const currentItem = await query(
+        const currentItem = await query<{ stock: number }>(
           'SELECT stock FROM inventory WHERE product_id = $1',
           [itemData.productId]
         );
@@ -195,7 +195,12 @@ export default async function handler(
         );
 
         // Fetch updated item
-        const result = await query(
+        const result = await query<{
+          product_id: string;
+          product_name: string;
+          stock: number;
+          price: string | number;
+        }>(
           'SELECT * FROM inventory WHERE product_id = $1',
           [itemData.productId]
         );

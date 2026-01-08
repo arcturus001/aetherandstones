@@ -78,35 +78,87 @@ export async function initializeDatabase(): Promise<void> {
       )
     `);
 
-    // Create orders table (new schema)
+    // Create orders table (complete schema)
     await client.query(`
       CREATE TABLE IF NOT EXISTS orders (
         id VARCHAR(255) PRIMARY KEY,
         user_id VARCHAR(255),
-        email_snapshot VARCHAR(255) NOT NULL,
+        customer_name VARCHAR(255),
+        customer_email VARCHAR(255),
+        email_snapshot VARCHAR(255),
+        items JSONB DEFAULT '[]',
+        shipping_address JSONB DEFAULT '{}',
+        subtotal DECIMAL(10, 2) DEFAULT 0,
+        shipping_cost DECIMAL(10, 2) DEFAULT 0,
         total DECIMAL(10, 2) NOT NULL,
         currency VARCHAR(3) NOT NULL DEFAULT 'USD',
-        status VARCHAR(50) NOT NULL,
-        payment_provider VARCHAR(50),
-        payment_intent_id VARCHAR(255),
+        shipping_method VARCHAR(50) DEFAULT 'standard',
         tracking_number VARCHAR(255),
         tracking_url VARCHAR(500),
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        status VARCHAR(50) NOT NULL DEFAULT 'gathering',
+        payment_provider VARCHAR(50),
+        payment_intent_id VARCHAR(255),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `);
     
-    // Add tracking columns if they don't exist (for existing databases)
+    // Add new columns if they don't exist (migration for existing databases)
     await client.query(`
       DO $$ 
       BEGIN
+        -- Add customer_name column
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                       WHERE table_name='orders' AND column_name='customer_name') THEN
+          ALTER TABLE orders ADD COLUMN customer_name VARCHAR(255);
+        END IF;
+        -- Add customer_email column
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                       WHERE table_name='orders' AND column_name='customer_email') THEN
+          ALTER TABLE orders ADD COLUMN customer_email VARCHAR(255);
+        END IF;
+        -- Add items column (JSONB)
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                       WHERE table_name='orders' AND column_name='items') THEN
+          ALTER TABLE orders ADD COLUMN items JSONB DEFAULT '[]';
+        END IF;
+        -- Add shipping_address column (JSONB)
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                       WHERE table_name='orders' AND column_name='shipping_address') THEN
+          ALTER TABLE orders ADD COLUMN shipping_address JSONB DEFAULT '{}';
+        END IF;
+        -- Add subtotal column
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                       WHERE table_name='orders' AND column_name='subtotal') THEN
+          ALTER TABLE orders ADD COLUMN subtotal DECIMAL(10, 2) DEFAULT 0;
+        END IF;
+        -- Add shipping_cost column
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                       WHERE table_name='orders' AND column_name='shipping_cost') THEN
+          ALTER TABLE orders ADD COLUMN shipping_cost DECIMAL(10, 2) DEFAULT 0;
+        END IF;
+        -- Add shipping_method column
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                       WHERE table_name='orders' AND column_name='shipping_method') THEN
+          ALTER TABLE orders ADD COLUMN shipping_method VARCHAR(50) DEFAULT 'standard';
+        END IF;
+        -- Add tracking_number column
         IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
                        WHERE table_name='orders' AND column_name='tracking_number') THEN
           ALTER TABLE orders ADD COLUMN tracking_number VARCHAR(255);
         END IF;
+        -- Add tracking_url column
         IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
                        WHERE table_name='orders' AND column_name='tracking_url') THEN
           ALTER TABLE orders ADD COLUMN tracking_url VARCHAR(500);
         END IF;
+        -- Add updated_at column
+        IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                       WHERE table_name='orders' AND column_name='updated_at') THEN
+          ALTER TABLE orders ADD COLUMN updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+        END IF;
+        -- Migrate email_snapshot to customer_email for existing rows
+        UPDATE orders SET customer_email = email_snapshot WHERE customer_email IS NULL AND email_snapshot IS NOT NULL;
       END $$;
     `);
 

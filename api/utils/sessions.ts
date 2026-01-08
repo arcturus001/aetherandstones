@@ -132,6 +132,16 @@ export async function cleanupExpiredSessions(): Promise<number> {
   return result.rowCount || 0;
 }
 
+/**
+ * Extract session token from request cookies
+ * @param req - Request object with headers.cookie
+ */
+export function getSessionToken(req: { headers: { cookie?: string } }): string | null {
+  const cookies = req.headers.cookie || '';
+  const cookieMatch = cookies.match(new RegExp(`(^| )${SESSION_COOKIE_NAME}=([^;]+)`));
+  return cookieMatch ? cookieMatch[2] : null;
+}
+
 export { SESSION_COOKIE_NAME, SESSION_DURATION_MS };
 
 

@@ -15,7 +15,7 @@ import {
 import { primarycolor } from "../styles/primaryColor";
 import { sendOrderNotificationEmail, type OrderDetails } from "../utils/email";
 import { addOrder } from "../utils/orders";
-import { getCurrentUser } from "../utils/userAuth";
+import { getCurrentUser } from "../utils/auth";
 import type { RecentOrder, OrderItem } from "../utils/mockData";
 
 const Checkout = () => {
@@ -127,8 +127,8 @@ const Checkout = () => {
         shippingMethod,
       };
 
-      // Create order record
-      const currentUser = getCurrentUser();
+      // Create order record - check if user is logged in
+      const currentUser = await getCurrentUser();
       const orderId = `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
       
       const orderItems: OrderItem[] = cartProducts
@@ -297,6 +297,27 @@ const Checkout = () => {
         })}
       >
         <PageHero title="Checkout" subtitle="Complete your order with secure payment." />
+
+        {/* Demo Mode Notice */}
+        <div
+          style={style({
+            maxWidth: "[1200px]",
+            marginX: "auto",
+            width: "100%",
+            padding: 16,
+            backgroundColor: "[rgba(203, 109, 71, 0.15)]",
+            border: "[1px solid rgba(203, 109, 71, 0.4)]",
+            borderRadius: "[8px]",
+            display: "flex",
+            alignItems: "center",
+            gap: 12,
+          })}
+        >
+          <Text styles={style({ fontSize: "[20px]", lineHeight: "[1]" })}>🧪</Text>
+          <Text styles={style({ fontSize: "[14px]", color: "[rgba(255, 255, 255, 0.9)]" })}>
+            <strong>Demo Mode:</strong> This is a demonstration checkout. No real payments will be processed and no actual charges will be made.
+          </Text>
+        </div>
 
         <section
           style={style({
@@ -712,9 +733,9 @@ const Checkout = () => {
 
             <div style={style({ display: "flex", flexDirection: "column", gap: 12, marginTop: 24 })}>
               <div style={style({ display: "flex", alignItems: "center", gap: 8 })}>
-                <span style={{ fontSize: "16px" }}>🔒</span>
+                <span style={{ fontSize: "16px" }}>🧪</span>
                 <Text styles={style({ fontSize: "[12px]", color: "[rgba(255, 255, 255, 0.6)]" })}>
-                  Secure payment powered by Stripe
+                  Demo checkout (no real charges)
                 </Text>
               </div>
               <div style={style({ display: "flex", alignItems: "center", gap: 8 })}>

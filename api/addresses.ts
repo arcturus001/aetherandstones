@@ -8,18 +8,9 @@
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { query, initializeDatabase } from './db';
-import { validateSession, SESSION_COOKIE_NAME } from './utils/sessions';
+import { validateSession, getSessionToken } from './utils/sessions';
 
 const APP_URL = process.env.APP_URL || process.env.VITE_APP_URL || 'http://localhost:3000';
-
-/**
- * Get session token from cookie
- */
-function getSessionToken(req: VercelRequest): string | null {
-  const cookies = req.headers.cookie || '';
-  const cookieMatch = cookies.match(new RegExp(`(^| )${SESSION_COOKIE_NAME}=([^;]+)`));
-  return cookieMatch ? cookieMatch[2] : null;
-}
 
 /**
  * Get authenticated user ID from session

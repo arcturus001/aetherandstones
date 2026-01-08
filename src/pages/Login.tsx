@@ -5,8 +5,7 @@ import { Footer } from "../components/Footer";
 import { PageHero } from "../components/PageHero";
 import { Text, Button, TextField } from "../components/ui";
 import { style } from "../utils/styles";
-import { login, getCurrentUser } from "../utils/auth";
-import { registerUser } from "../utils/userAuth";
+import { login, getCurrentUser, registerUser } from "../utils/auth";
 import { primarycolor } from "../styles/primaryColor";
 
 const Login = () => {

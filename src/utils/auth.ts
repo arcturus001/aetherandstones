@@ -107,3 +107,83 @@ export async function isAuthenticated(): Promise<boolean> {
   const user = await getCurrentUser();
   return user !== null;
 }
+
+/**
+ * Register a new user with email, password, and name
+ * Creates account, sets password, and auto-logs in via session cookie
+ */
+export async function registerUser(
+  email: string,
+  password: string,
+  fullName: string
+): Promise<{ success: boolean; error?: string; user?: User }> {
+  const emailLower = email.toLowerCase().trim();
+
+  // Validate input
+  if (!emailLower || !password || !fullName) {
+    return { success: false, error: 'All fields are required' };
+  }
+
+  if (password.length < 6) {
+    return { success: false, error: 'Password must be at least 6 characters' };
+  }
+
+  try {
+    // First create user (without password) - this generates a password setup token
+    const createResponse = await fetch(`${API_BASE_URL}/users`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({
+        email: emailLower,
+        name: fullName.trim(),
+      }),
+    });
+
+    const createData = await createResponse.json();
+
+    if (!createResponse.ok && createResponse.status !== 409) {
+      return { success: false, error: createData.error || 'Failed to create account' };
+    }
+
+    // Set password using the token
+    const passwordResponse = await fetch(`${API_BASE_URL}/users?action=set-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({
+        token: createData.token,
+        email: emailLower,
+        password: password,
+      }),
+    });
+
+    const passwordData = await passwordResponse.json();
+
+    if (!passwordResponse.ok) {
+      return { success: false, error: passwordData.error || 'Failed to set password' };
+    }
+
+    // Now login to create a session cookie
+    const loginResult = await login(emailLower, password);
+    if (!loginResult.success) {
+      // Account created but login failed - user can try logging in manually
+      return { 
+        success: true, 
+        user: {
+          id: passwordData.user.id,
+          email: passwordData.user.email,
+          name: passwordData.user.name,
+          phone: null,
+          createdAt: new Date().toISOString(),
+        },
+        error: 'Account created. Please log in.'
+      };
+    }
+
+    return { success: true, user: loginResult.user };
+  } catch (error) {
+    console.error('Registration error:', error);
+    return { success: false, error: 'An error occurred. Please try again.' };
+  }
+}

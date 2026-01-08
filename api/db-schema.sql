@@ -26,19 +26,34 @@ CREATE TABLE IF NOT EXISTS addresses (
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- Orders table (new schema)
+-- Orders table (complete schema for frontend + webhook flows)
 CREATE TABLE IF NOT EXISTS orders (
   id VARCHAR(255) PRIMARY KEY,
   user_id VARCHAR(255),
-  email_snapshot VARCHAR(255) NOT NULL,
+  -- Customer info snapshot (for order history even if user is deleted)
+  customer_name VARCHAR(255) NOT NULL,
+  customer_email VARCHAR(255) NOT NULL,
+  email_snapshot VARCHAR(255), -- Legacy field, kept for backward compatibility
+  -- Order items and shipping (stored as JSON)
+  items JSONB NOT NULL DEFAULT '[]',
+  shipping_address JSONB NOT NULL DEFAULT '{}',
+  -- Pricing
+  subtotal DECIMAL(10, 2) NOT NULL DEFAULT 0,
+  shipping_cost DECIMAL(10, 2) NOT NULL DEFAULT 0,
   total DECIMAL(10, 2) NOT NULL,
   currency VARCHAR(3) NOT NULL DEFAULT 'USD',
-  status VARCHAR(50) NOT NULL,
-  payment_provider VARCHAR(50),
-  payment_intent_id VARCHAR(255),
+  -- Shipping details
+  shipping_method VARCHAR(50) DEFAULT 'standard',
   tracking_number VARCHAR(255),
   tracking_url VARCHAR(500),
+  -- Order status
+  status VARCHAR(50) NOT NULL DEFAULT 'gathering',
+  -- Payment info
+  payment_provider VARCHAR(50),
+  payment_intent_id VARCHAR(255),
+  -- Timestamps
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
 );
 
@@ -76,28 +91,6 @@ CREATE TABLE IF NOT EXISTS inventory (
 );
 
 -- Subscriptions table
-CREATE TABLE IF NOT EXISTS subscriptions (
-  id VARCHAR(255) PRIMARY KEY,
-  email VARCHAR(255) NOT NULL UNIQUE,
-  name VARCHAR(255),
-  subscribed_at TIMESTAMP NOT NULL,
-  status VARCHAR(50) NOT NULL,
-  source VARCHAR(255),
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Legacy tables (for backward compatibility)
-CREATE TABLE IF NOT EXISTS inventory (
-  product_id VARCHAR(255) PRIMARY KEY,
-  product_name VARCHAR(255) NOT NULL,
-  stock INTEGER NOT NULL,
-  status VARCHAR(50) NOT NULL,
-  price DECIMAL(10, 2) NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
 CREATE TABLE IF NOT EXISTS subscriptions (
   id VARCHAR(255) PRIMARY KEY,
   email VARCHAR(255) NOT NULL UNIQUE,

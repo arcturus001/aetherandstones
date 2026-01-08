@@ -5,20 +5,11 @@
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { initializeDatabase } from '../db';
-import { deleteSession, SESSION_COOKIE_NAME } from '../utils/sessions';
+import { deleteSession, getSessionToken, SESSION_COOKIE_NAME } from '../utils/sessions';
 import { serialize } from 'cookie';
 
 const isProduction = process.env.NODE_ENV === 'production';
 const APP_URL = process.env.APP_URL || process.env.VITE_APP_URL || 'http://localhost:3000';
-
-/**
- * Get session token from cookie
- */
-function getSessionToken(req: VercelRequest): string | null {
-  const cookies = req.headers.cookie || '';
-  const cookieMatch = cookies.match(new RegExp(`(^| )${SESSION_COOKIE_NAME}=([^;]+)`));
-  return cookieMatch ? cookieMatch[2] : null;
-}
 
 /**
  * Clear session cookie
