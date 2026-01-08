@@ -42,6 +42,8 @@ interface RecentOrder {
   quantity?: number;
   email?: string;
   address?: string;
+  trackingNumber?: string;
+  trackingUrl?: string;
 }
 
 // Initialize database on first import
