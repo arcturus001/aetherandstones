@@ -948,8 +948,8 @@ button:hover {
   }
 }
 
-/* Hero title for viewports 400px-500px */
-@media (min-width: 400px) and (max-width: 500px) {
+/* Hero title for viewports 390px-500px */
+@media (min-width: 390px) and (max-width: 500px) {
   .hero-title {
     font-size: 60px !important;
     line-height: 1.2 !important;
