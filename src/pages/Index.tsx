@@ -82,33 +82,37 @@ const Index = () => {
     return () => window.removeEventListener("resize", positionSections);
   }, []);
 
-  // Handle video loading - show placeholder first, then video when ready
+  // Handle video loading - show placeholder first, then fade in video on first frame (streaming)
   useEffect(() => {
     const video = videoRef.current;
     if (!video || !heroVideoSrc) return;
 
-    const handleCanPlay = () => {
-      setVideoReady(true);
-      // Start playing the video once it's ready
+    const tryPlay = () => {
       video.play().catch((error) => {
         console.warn('Video autoplay failed:', error);
       });
     };
 
+    // `loadeddata` means the first frame is available (best point to swap from placeholder)
     const handleLoadedData = () => {
-      // Video data is loaded, ready to play
       setVideoReady(true);
+      tryPlay();
     };
 
-    video.addEventListener('canplay', handleCanPlay);
+    // `canplay` helps kick off playback earlier on some mobile browsers
+    const handleCanPlay = () => {
+      tryPlay();
+    };
+
     video.addEventListener('loadeddata', handleLoadedData);
+    video.addEventListener('canplay', handleCanPlay);
     
-    // Preload the video but don't autoplay until ready
+    // Start fetching immediately
     video.load();
 
     return () => {
-      video.removeEventListener('canplay', handleCanPlay);
       video.removeEventListener('loadeddata', handleLoadedData);
+      video.removeEventListener('canplay', handleCanPlay);
     };
   }, []);
   const featuredHeadingStyles = style({
@@ -204,10 +208,12 @@ const Index = () => {
           {heroVideoSrc && (
             <video
               ref={videoRef}
+              poster={heroPlaceholderSrc || undefined}
+              autoPlay
               loop
               muted
               playsInline
-              preload="auto"
+              preload="metadata"
               style={{
                 position: "absolute",
                 inset: 0,

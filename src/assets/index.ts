@@ -10,13 +10,15 @@ import hoverGreenImg from "../Images/hover green.png";
 import obsidianImg from "../Images/obsidian.png";
 import brownImg from "../Images/brown.png";
 import purpleImg from "../Images/purple.png";
+import heroPlaceholderImg from "../Images/about.png";
 // Import video
 import heroVideoFile from "../Images/video.mp4";
 
 // Hero video
 export const heroVideoSrc: string = heroVideoFile;
-// Hero placeholder - uncomment and set once placeholder image is added:
-export const heroPlaceholderSrc: string = ""; // Set to: heroPlaceholderImg
+// Hero placeholder (used for first paint before video draws its first frame)
+// TODO: Replace `about.png` with a dedicated hero placeholder when available.
+export const heroPlaceholderSrc: string = heroPlaceholderImg;
 
 // Product images
 export const productImages = {
