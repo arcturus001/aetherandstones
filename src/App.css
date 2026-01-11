@@ -1186,19 +1186,6 @@ button:hover {
   }
 }
 
-/* Mobile device 450px and below - reduce left inset for the header title */
-@media (max-width: 450px) {
-  .logo-container {
-    padding-left: 0 !important;
-  }
-
-  /* Hero text/CTAs: remove the extra 24px top offset on small screens */
-  .hero-content-container {
-    margin-top: 0 !important;
-    padding-top: 0 !important;
-  }
-}
-
 /* Desktop navigation - Show on screens larger than 500px */
 @media (min-width: 501px) {
   .desktop-nav {
