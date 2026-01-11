@@ -1238,3 +1238,10 @@ button:hover {
     transition: background-color 0.2s ease !important;
   }
 }
+
+/* Checkout: show payment accordion but prevent interaction until shipping is complete */
+.checkout-payment-disclosure--disabled .ui-disclosure-header {
+  pointer-events: none;
+  cursor: not-allowed;
+  opacity: 0.85;
+}

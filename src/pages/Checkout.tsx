@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Header } from "../components/Header";
 import { Footer } from "../components/Footer";
 import { PageHero } from "../components/PageHero";
-import { Text, Heading, Button, TextField } from "../components/ui";
+import { Text, Heading, Button, TextField, Disclosure, DisclosureHeader, DisclosureTitle, DisclosurePanel } from "../components/ui";
 import { style } from "../utils/styles";
 import { getProducts } from "../utils/products";
 import {
@@ -45,6 +45,14 @@ const Checkout = () => {
   });
 
   const [shippingMethod, setShippingMethod] = useState<"express" | "standard">("standard");
+  const isShippingInfoComplete =
+    formData.fullName.trim().length > 0 &&
+    formData.email.trim().length > 0 &&
+    formData.address.trim().length > 0 &&
+    formData.city.trim().length > 0 &&
+    formData.state.trim().length > 0 &&
+    formData.postalCode.trim().length > 0 &&
+    formData.country.trim().length > 0;
 
   useEffect(() => {
     const items = getCartItems();
@@ -511,73 +519,100 @@ const Checkout = () => {
 
               {/* Payment Information Section */}
               <div style={style({ paddingTop: 20, borderTop: "[1px solid #2E2E2E]" })}>
-                <Heading
-                  level={3}
-                  styles={style({
-                    fontSize: "[24px]",
-                    fontWeight: "bold",
-                    color: "white",
-                    marginBottom: 20,
-                  })}
+                <Disclosure
+                  key={isShippingInfoComplete ? "payment-enabled" : "payment-disabled"}
+                  defaultOpen={isShippingInfoComplete}
+                  className={isShippingInfoComplete ? "checkout-payment-disclosure" : "checkout-payment-disclosure checkout-payment-disclosure--disabled"}
                 >
-                  Payment Information
-                </Heading>
+                  <DisclosureHeader>
+                    <DisclosureTitle
+                      styles={style({
+                        fontSize: "[24px]",
+                        fontWeight: "bold",
+                        color: "white",
+                      })}
+                    >
+                      Payment information
+                    </DisclosureTitle>
+                  </DisclosureHeader>
+                  <DisclosurePanel>
+                    {!isShippingInfoComplete && (
+                      <Text
+                        styles={style({
+                          fontSize: "[13px]",
+                          color: "[rgba(255, 255, 255, 0.65)]",
+                          marginBottom: 12,
+                        })}
+                      >
+                        Add your shipping details to enable card information.
+                      </Text>
+                    )}
 
-                <div style={style({ display: "flex", flexDirection: "column", gap: 16 })}>
-                  <TextField
-                    label="Card Number"
-                    isRequired
-                    type="text"
-                    value={formData.cardNumber}
-                    onChange={(e) => {
-                      // Format card number with spaces every 4 digits
-                      const value = e.target.value.replace(/\s/g, "").replace(/(.{4})/g, "$1 ").trim();
-                      handleChange("cardNumber", value);
-                    }}
-                    placeholder="1234 5678 9012 3456"
-                    maxLength={19}
-                  />
+                    <div
+                      style={style({
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 16,
+                        opacity: isShippingInfoComplete ? 1 : 0.6,
+                      })}
+                    >
+                      <TextField
+                        label="Card Number"
+                        isRequired
+                        type="text"
+                        disabled={!isShippingInfoComplete}
+                        value={formData.cardNumber}
+                        onChange={(e) => {
+                          const value = e.target.value.replace(/\s/g, "").replace(/(.{4})/g, "$1 ").trim();
+                          handleChange("cardNumber", value);
+                        }}
+                        placeholder="1234 5678 9012 3456"
+                        maxLength={19}
+                      />
 
-                  <div style={style({ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 16 })}>
-                    <TextField
-                      label="Expiry Date"
-                      isRequired
-                      type="text"
-                      value={formData.expiryDate}
-                      onChange={(e) => {
-                        // Format expiry date as MM/YY
-                        let value = e.target.value.replace(/\D/g, "");
-                        if (value.length >= 2) {
-                          value = value.substring(0, 2) + "/" + value.substring(2, 4);
-                        }
-                        handleChange("expiryDate", value);
-                      }}
-                      placeholder="MM/YY"
-                      maxLength={5}
-                    />
-                    <TextField
-                      label="CVV"
-                      isRequired
-                      type="text"
-                      value={formData.cvv}
-                      onChange={(e) => {
-                        // Only allow numbers, max 4 digits
-                        const value = e.target.value.replace(/\D/g, "").substring(0, 4);
-                        handleChange("cvv", value);
-                      }}
-                      placeholder="123"
-                      maxLength={4}
-                    />
-                  </div>
+                      <div style={style({ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 16 })}>
+                        <TextField
+                          label="Expiry Date"
+                          isRequired
+                          type="text"
+                          disabled={!isShippingInfoComplete}
+                          value={formData.expiryDate}
+                          onChange={(e) => {
+                            let value = e.target.value.replace(/\D/g, "");
+                            if (value.length >= 2) {
+                              value = value.substring(0, 2) + "/" + value.substring(2, 4);
+                            }
+                            handleChange("expiryDate", value);
+                          }}
+                          placeholder="MM/YY"
+                          maxLength={5}
+                        />
+                        <TextField
+                          label="CVV"
+                          isRequired
+                          type="text"
+                          disabled={!isShippingInfoComplete}
+                          value={formData.cvv}
+                          onChange={(e) => {
+                            const value = e.target.value.replace(/\D/g, "").substring(0, 4);
+                            handleChange("cvv", value);
+                          }}
+                          placeholder="123"
+                          maxLength={4}
+                        />
+                      </div>
 
-                  <TextField
-                    label="Cardholder Name"
-                    isRequired
-                    value={formData.cardholderName}
-                    onChange={(e) => handleChange("cardholderName", e.target.value)}
-                    placeholder="John Doe"
-                  />
-                </div>
+                      <TextField
+                        label="Cardholder Name"
+                        isRequired
+                        disabled={!isShippingInfoComplete}
+                        value={formData.cardholderName}
+                        onChange={(e) => handleChange("cardholderName", e.target.value)}
+                        placeholder="John Doe"
+                      />
+                    </div>
+                  </DisclosurePanel>
+                </Disclosure>
               </div>
             </form>
           </div>
