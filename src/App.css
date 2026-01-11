@@ -491,16 +491,6 @@ button:hover {
   }
 }
 
-@keyframes pulse-glow {
-  0%, 100% {
-    transform: scale(0.92);
-    opacity: 0.55;
-  }
-  50% {
-    transform: scale(1.02);
-    opacity: 0.85;
-  }
-}
 
 @-webkit-keyframes fade-in-up {
   from {
@@ -532,48 +522,7 @@ button:hover {
   -o-transform: translateZ(0);
 }
 
-/* Handcrafted image: subtle pulsing circle underneath */
-.handcrafted-image-container {
-  isolation: isolate;
-}
 
-.handcrafted-image-container::before {
-  content: "";
-  position: absolute;
-  /* slightly larger than the container so the glow is visible around the edges */
-  inset: -12%;
-  border-radius: 50%;
-  pointer-events: none;
-  /* Above the gold square, below the spinning image */
-  z-index: -1;
-  /* soft white ring with transparent edges */
-  background: radial-gradient(
-    circle,
-    rgba(255, 255, 255, 0) 35%,
-    rgba(255, 255, 255, 0.28) 52%,
-    rgba(255, 255, 255, 0.18) 62%,
-    rgba(255, 255, 255, 0) 82%
-  );
-  filter: blur(8px);
-  transform: scale(0.92);
-  opacity: 0.9;
-  mix-blend-mode: screen;
-  animation: pulse-glow 7s ease-in-out infinite;
-}
-
-.handcrafted-image-background {
-  z-index: -3 !important;
-}
-
-.handcrafted-image-container .rule-image-spin {
-  z-index: 0 !important;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .handcrafted-image-container::before {
-    animation: none;
-  }
-}
 
 .rule-image-no-spin {
   animation: none !important;
