@@ -491,7 +491,6 @@ button:hover {
   }
 }
 
-
 @-webkit-keyframes fade-in-up {
   from {
     opacity: 0;
@@ -521,8 +520,6 @@ button:hover {
   -ms-transform: translateZ(0);
   -o-transform: translateZ(0);
 }
-
-
 
 .rule-image-no-spin {
   animation: none !important;
