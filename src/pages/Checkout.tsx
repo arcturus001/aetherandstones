@@ -50,7 +50,6 @@ const Checkout = () => {
     formData.email.trim().length > 0 &&
     formData.address.trim().length > 0 &&
     formData.city.trim().length > 0 &&
-    formData.state.trim().length > 0 &&
     formData.postalCode.trim().length > 0 &&
     formData.country.trim().length > 0;
 
@@ -95,7 +94,7 @@ const Checkout = () => {
     
     // Validate required fields
     if (!formData.fullName || !formData.email || !formData.address || 
-        !formData.city || !formData.state || !formData.postalCode || 
+        !formData.city || !formData.postalCode || 
         !formData.country || !formData.cardNumber || !formData.expiryDate || 
         !formData.cvv || !formData.cardholderName) {
       alert("Please fill in all required fields");
@@ -493,8 +492,7 @@ const Checkout = () => {
                   placeholder="San Francisco"
                 />
                 <TextField
-                  label="State"
-                  isRequired
+                  label="State (optional)"
                   value={formData.state}
                   onChange={(e) => handleChange("state", e.target.value)}
                   placeholder="CA"
