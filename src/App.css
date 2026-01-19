@@ -1195,6 +1195,18 @@ button:hover {
   }
 }
 
+/* Product detail: full-bleed square image on small phones */
+@media (max-width: 450px) {
+  .product-detail-image-wrapper {
+    width: 100vw !important;
+    aspect-ratio: 1 / 1 !important;
+    border-radius: 0 !important;
+    margin-left: calc(50% - 50vw) !important;
+    margin-right: calc(50% - 50vw) !important;
+    margin-top: 0 !important;
+  }
+}
+
 /* Desktop navigation - Show on screens larger than 500px */
 @media (min-width: 501px) {
   .desktop-nav {

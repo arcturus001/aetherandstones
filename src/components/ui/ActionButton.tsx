@@ -18,6 +18,7 @@ export const ActionButton: React.FC<ActionButtonProps> = ({
   styles,
   'aria-label': ariaLabel,
   onClick,
+  type = 'button',
   ...props
 }) => {
   const classes = [
@@ -34,6 +35,7 @@ export const ActionButton: React.FC<ActionButtonProps> = ({
       disabled={isDisabled}
       onClick={onClick}
       aria-label={ariaLabel}
+      type={type}
       {...props}
     >
       {children}

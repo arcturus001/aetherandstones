@@ -175,7 +175,7 @@ const ProductDetail = () => {
       ) : (
         <main>
           <section style={heroStyles}>
-            <div style={imageWrapperStyles}>
+            <div className="product-detail-image-wrapper" style={imageWrapperStyles}>
               <img
                 src={currentImage}
                 alt={product.name}

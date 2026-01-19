@@ -2,7 +2,7 @@ import { ActionButton, Text, Button } from "./ui";
 import { ShoppingCart } from "./ui/icons";
 import { primarycolor } from "../styles/primaryColor";
 import { style } from "../utils/styles";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { getCurrentUser } from "../utils/auth";
 import { isAuthenticated as isAdminAuthenticated, setAuthenticated } from "../utils/adminAuth";
@@ -65,8 +65,16 @@ export const Header = () => {
   const handleLogout = () => {
     setAuthenticated(false);
     sessionStorage.removeItem("admin-session-active");
-    navigate("/");
+    // Hard navigate to avoid any client-side routing edge cases.
+    window.location.href = "/";
     setIsMenuOpen(false);
+  };
+
+  const goTo = (to: string) => {
+    // Use a hard navigation to ensure route changes always render correctly.
+    setIsShopDropdownOpen(false);
+    setIsMenuOpen(false);
+    window.location.href = to;
   };
 
   // Hamburger icon component
@@ -162,10 +170,13 @@ export const Header = () => {
       }}
     >
       {/* Logo and brand */}
-      <Link 
-        to={isAdminRoute && isAdminAuth ? "/admin" : "/"} 
+      <a
+        href={isAdminRoute && isAdminAuth ? "/admin" : "/"}
+        onClick={(e) => {
+          e.preventDefault();
+          goTo(isAdminRoute && isAdminAuth ? "/admin" : "/");
+        }}
         style={style({ textDecoration: "none", color: "inherit" })}
-        onClick={() => setIsMenuOpen(false)}
       >
         <div className="logo-container" style={style({ display: "flex", alignItems: "center", gap: 12, height: 30, flexShrink: 0, width: "auto", minWidth: "auto", paddingLeft: 24 })}>
           <Text
@@ -196,7 +207,7 @@ export const Header = () => {
             </Text>
           )}
         </div>
-      </Link>
+      </a>
 
       {/* Navigation */}
       {isAdminRoute && isAdminAuth ? (
@@ -269,42 +280,26 @@ export const Header = () => {
           gap: 8,
           overflowX: "auto",
         })}>
-          <Link 
-            to="/" 
-            style={style({ 
-              textDecoration: 'none', 
-              color: 'white',
-              display: 'inline-block'
+          <ActionButton
+            isQuiet
+            onClick={() => goTo("/")}
+            styles={style({
+              color: location.pathname === "/" ? primarycolor : "white",
             })}
           >
-            <ActionButton 
-              isQuiet 
-              styles={style({ 
-                color: location.pathname === "/" ? primarycolor : 'white' 
-              })}
-            >
-              Home
-            </ActionButton>
-          </Link>
+            Home
+          </ActionButton>
           <div ref={shopDropdownRef} style={{ position: 'relative', display: 'inline-block' }}>
-            <Link 
-              to="/shop" 
-              style={style({ 
-                textDecoration: 'none', 
-                color: 'white',
-                display: 'inline-block'
-              })}
+            <ActionButton
+              isQuiet
+              onClick={() => goTo("/shop")}
               onMouseEnter={() => setIsShopDropdownOpen(true)}
+              styles={style({
+                color: location.pathname === "/shop" ? primarycolor : "white",
+              })}
             >
-              <ActionButton 
-                isQuiet 
-                styles={style({ 
-                  color: location.pathname === "/shop" ? primarycolor : 'white' 
-                })}
-              >
-                Shop
-              </ActionButton>
-            </Link>
+              Shop
+            </ActionButton>
             {isShopDropdownOpen && (
               <div 
                 style={style({
@@ -324,15 +319,18 @@ export const Header = () => {
                 })}
                 onMouseLeave={() => setIsShopDropdownOpen(false)}
               >
-                <Link 
-                  to="/shop" 
-                  onClick={() => setIsShopDropdownOpen(false)}
-                  style={style({ 
-                    textDecoration: 'none', 
-                    color: 'white',
-                    display: 'block',
-                    padding: '12px 16px',
-                    transition: 'background-color 0.2s',
+                <a
+                  href="/shop"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    goTo("/shop");
+                  }}
+                  style={style({
+                    textDecoration: "none",
+                    color: "white",
+                    display: "block",
+                    padding: "12px 16px",
+                    transition: "background-color 0.2s",
                   })}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.backgroundColor = 'rgba(203, 109, 71, 0.2)';
@@ -344,63 +342,39 @@ export const Header = () => {
                   <Text styles={style({ color: 'white', fontSize: '[14px]' })}>
                     All Products
                   </Text>
-                </Link>
+                </a>
               </div>
             )}
           </div>
-          <Link 
-            to="/energy" 
-            style={style({ 
-              textDecoration: 'none', 
-              color: 'white',
-              display: 'inline-block'
+          <ActionButton
+            isQuiet
+            onClick={() => goTo("/energy")}
+            styles={style({
+              color: location.pathname === "/energy" ? primarycolor : "white",
             })}
           >
-            <ActionButton 
-              isQuiet 
-              styles={style({ 
-                color: location.pathname === "/energy" ? primarycolor : 'white' 
-              })}
-            >
-              Energy Guide
-            </ActionButton>
-          </Link>
-        <Link 
-          to="/about" 
-          style={style({ 
-            textDecoration: 'none', 
-            color: 'white',
-            display: 'inline-block'
-          })}
-        >
-          <ActionButton 
-            isQuiet 
-            styles={style({ 
-              color: location.pathname === "/about" ? primarycolor : 'white' 
+            Energy Guide
+          </ActionButton>
+          <ActionButton
+            isQuiet
+            onClick={() => goTo("/about")}
+            styles={style({
+              color: location.pathname === "/about" ? primarycolor : "white",
             })}
           >
             About
           </ActionButton>
-        </Link>
-        {isUserLoggedIn && (
-          <Link 
-            to="/account" 
-            style={style({ 
-              textDecoration: 'none', 
-              color: 'white',
-              display: 'inline-block'
-            })}
-          >
-            <ActionButton 
-              isQuiet 
-              styles={style({ 
-                color: location.pathname === "/account" ? primarycolor : 'white' 
+          {isUserLoggedIn && (
+            <ActionButton
+              isQuiet
+              onClick={() => goTo("/account")}
+              styles={style({
+                color: location.pathname === "/account" ? primarycolor : "white",
               })}
             >
               My Account
             </ActionButton>
-          </Link>
-        )}
+          )}
       </nav>
       )}
 
@@ -423,15 +397,13 @@ export const Header = () => {
           </Button>
         ) : (
           // Regular Cart Button
-          <Link to="/cart" style={style({ textDecoration: "none", color: "inherit", marginRight: 16 })}>
-            <div style={cartButtonStyles} className="cart-button-wrapper">
-              <ActionButton aria-label="Shopping cart" isQuiet>
-                <span style={style({ marginRight: 8 })}>Cart</span>
-                <ShoppingCart />
-                {cartCount > 0 && <span className="header-cart-badge">{cartCount}</span>}
-              </ActionButton>
-            </div>
-          </Link>
+          <div style={cartButtonStyles} className="cart-button-wrapper">
+            <ActionButton aria-label="Shopping cart" isQuiet onClick={() => goTo("/cart")}>
+              <span style={style({ marginRight: 8 })}>Cart</span>
+              <ShoppingCart />
+              {cartCount > 0 && <span className="header-cart-badge">{cartCount}</span>}
+            </ActionButton>
+          </div>
         )}
         
         {/* Hamburger button - visible on mobile */}
@@ -556,9 +528,12 @@ export const Header = () => {
           </div>
         ) : (
           <div style={style({ display: "flex", flexDirection: "column", gap: 16 })}>
-            <Link
-              to="/"
-              onClick={() => setIsMenuOpen(false)}
+            <a
+              href="/"
+              onClick={(e) => {
+                e.preventDefault();
+                goTo("/");
+              }}
               style={style({
                 textDecoration: 'none',
                 color: 'white',
@@ -571,10 +546,13 @@ export const Header = () => {
               })}
             >
               Home
-            </Link>
-            <Link
-              to="/shop"
-              onClick={() => setIsMenuOpen(false)}
+            </a>
+            <a
+              href="/shop"
+              onClick={(e) => {
+                e.preventDefault();
+                goTo("/shop");
+              }}
               style={style({
                 textDecoration: 'none',
                 color: 'white',
@@ -587,10 +565,13 @@ export const Header = () => {
               })}
             >
               All Products
-            </Link>
-            <Link
-              to="/energy"
-              onClick={() => setIsMenuOpen(false)}
+            </a>
+            <a
+              href="/energy"
+              onClick={(e) => {
+                e.preventDefault();
+                goTo("/energy");
+              }}
               style={style({
                 textDecoration: 'none',
                 color: 'white',
@@ -603,10 +584,13 @@ export const Header = () => {
               })}
             >
               Energy Guide
-            </Link>
-            <Link
-              to="/about"
-              onClick={() => setIsMenuOpen(false)}
+            </a>
+            <a
+              href="/about"
+              onClick={(e) => {
+                e.preventDefault();
+                goTo("/about");
+              }}
               style={style({
                 textDecoration: 'none',
                 color: 'white',
@@ -619,11 +603,14 @@ export const Header = () => {
               })}
             >
               About
-            </Link>
+            </a>
             {isUserLoggedIn && (
-              <Link
-                to="/account"
-                onClick={() => setIsMenuOpen(false)}
+              <a
+                href="/account"
+                onClick={(e) => {
+                  e.preventDefault();
+                  goTo("/account");
+                }}
                 style={style({
                   textDecoration: 'none',
                   color: 'white',
@@ -636,7 +623,7 @@ export const Header = () => {
                 })}
               >
                 My Account
-              </Link>
+              </a>
             )}
           </div>
         )}
